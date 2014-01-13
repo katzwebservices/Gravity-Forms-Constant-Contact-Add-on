@@ -1059,10 +1059,16 @@ EOD;
         foreach($feed["meta"]["field_map"] as $var_tag => $field_id){
 
             $field = RGFormsModel::get_field($form, $field_id);
-            if($field_id == intval($field_id) && RGFormsModel::get_input_type($field) == "address") //handling full address
+			$field_type = RGFormsModel::get_input_type($field);
+			
+            if($field_id == intval($field_id) && RGFormsModel::get_input_type($field) == "address") {
+            	//handling full address
                 $merge_vars[$var_tag] = self::get_address($entry, $field_id);
-            else
+			} elseif( $field_type == 'date' ) {
+				$merge_vars[$var_tag] = apply_filters( 'gravityforms_constant_contact_change_date_format', $entry[$field_id] );
+            } else {
                 $merge_vars[$var_tag] = $entry[$field_id];
+			}
         }
 
         $retval = $api->listSubscribe($feed["meta"]["contact_list_id"], $merge_vars, "html");
