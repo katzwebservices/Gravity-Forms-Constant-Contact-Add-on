@@ -1061,7 +1061,7 @@ EOD;
             $field = RGFormsModel::get_field($form, $field_id);
 			$field_type = RGFormsModel::get_input_type($field);
 			
-            if($field_id == intval($field_id) && RGFormsModel::get_input_type($field) == "address") {
+            if($field_id == intval($field_id) && $field_type == "address") {
             	//handling full address
                 $merge_vars[$var_tag] = self::get_address($entry, $field_id);
 			} elseif( $field_type == 'date' ) {
