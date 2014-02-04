@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms Constant Contact Add-On
 Plugin URI: https://katz.co/plugins/gravity-forms-constant-contact/
 Description: Integrates Gravity Forms with Constant Contact allowing form submissions to be automatically sent to your Constant Contact account.
-Version: 2.1.1
+Version: 2.1.2
 Author: Katz Web Services, Inc.
 Author URI: http://www.katzwebservices.com
 
@@ -356,9 +356,9 @@ EOD;
     }
 
     public static function constantcontact_page(){
-    	$view = @$_GET["view"];
-        if($view == "edit")
-            self::edit_page(@$_GET["id"]);
+    	$view = isset( $_GET['view'] ) ? $_GET['view'] : '';
+        if( $view == 'edit' )
+            self::edit_page( $_GET['id'] );
         else
             self::list_page();
     }
@@ -564,7 +564,7 @@ EOD;
 	}
 
     private static function edit_page(){
-        ?>
+    ?>
         <style>
             .constantcontact_col_heading{padding-bottom:2px; border-bottom: 1px solid #ccc; font-weight:bold;}
             .constantcontact_field_cell {padding: 6px 17px 0 0; margin-right:15px;}
@@ -595,16 +595,17 @@ EOD;
         $api = self::get_api();
 
         //getting setting id (0 when creating a new one)
-        $id = !empty($_POST["constantcontact_setting_id"]) ? $_POST["constantcontact_setting_id"] : absint(@$_GET["id"]);
-        $config = empty($id) ? array("is_active" => true) : GFConstantContactData::get_feed($id);
+        $id = !empty( $_POST["constantcontact_setting_id"] ) ? $_POST["constantcontact_setting_id"] : absint( $_GET["id"] );
+        $config = empty( $id ) ? array( 'is_active' => true ) : GFConstantContactData::get_feed( $id );
 
         //getting merge vars from selected list (if one was selected)
-        $merge_vars = empty($config["meta"]["contact_list_id"]) ? array() : $api->listMergeVars($config["meta"]["contact_list_id"]);
+        $merge_vars = empty( $config['meta']['contact_list_id'] ) ? array() : $api->listMergeVars( $config['meta']['contact_list_id'] );
 
         //updating meta information
-        if(@$_POST["gf_constantcontact_submit"]){
+        if( isset( $_POST['gf_constantcontact_submit'] ) ) {
 
-            list($list_id, $list_name) = explode("|:|", stripslashes($_POST["gf_constantcontact_list"]));
+            list($list_id, $list_name) = self::get_constantcontact_list_details( $_POST["gf_constantcontact_list"] );
+
             $config["meta"]["contact_list_id"] = $list_id;
             $config["meta"]["contact_list_name"] = $list_name;
             $config["form_id"] = absint($_POST["gf_constantcontact_form"]);
@@ -626,9 +627,9 @@ EOD;
             }
 
             $config["meta"]["field_map"] = $field_map;
-            $config["meta"]["optin_enabled"] = $_POST["constantcontact_optin_enable"] ? true : false;
-            $config["meta"]["optin_field_id"] = $config["meta"]["optin_enabled"] ? $_POST["constantcontact_optin_field_id"] : "";
-            $config["meta"]["optin_operator"] = $config["meta"]["optin_enabled"] ? $_POST["constantcontact_optin_operator"] : "";
+            $config["meta"]["optin_enabled"] = !empty( $_POST["constantcontact_optin_enable"] ) ? true : false;
+            $config["meta"]["optin_field_id"] = !empty( $config["meta"]["optin_enabled"] ) ? $_POST["constantcontact_optin_field_id"] : "";
+            $config["meta"]["optin_operator"] = !empty( $config["meta"]["optin_enabled"] ) ? $_POST["constantcontact_optin_operator"] : "";
             $config["meta"]["optin_value"] = $config["meta"]["optin_enabled"] ? $_POST["constantcontact_optin_value"] : "";
 
             if($is_valid){
@@ -646,28 +647,27 @@ EOD;
         }
 
         ?>
-        <form method="post" action="">
+        <form method="POST" action="<?php echo remove_query_arg('refresh'); ?>">
             <input type="hidden" name="constantcontact_setting_id" value="<?php echo $id ?>"/>
             <div class="margin_vertical_10">
                 <label for="gf_constantcontact_list" class="left_header"><?php _e("Constant Contact list", "gravity-forms-constant-contact"); ?> <?php gform_tooltip("constantcontact_contact_list") ?></label>
                 <?php
 
+
                 //getting all contact lists
                 $lists = $api->CC_List()->getLists();
-
+                
                 if (empty($lists)){
                     echo __("Could not load Constant Contact contact lists. <br/>Error: ", "gravity-forms-constant-contact") . $api->errorMessage;
                 }
                 else{
                     ?>
                     <select id="gf_constantcontact_list" name="gf_constantcontact_list" onchange="SelectList(jQuery(this).val());">
-                        <option value=""><?php _e("Select a Constant Contact List", "gravity-forms-constant-contact"); ?></option>
+                        <option value="" ><?php _e("Select a Constant Contact List", "gravity-forms-constant-contact"); ?></option>
                     <?php
-                    foreach ($lists as $list){
-                        $selected = $list["id"] == $config["meta"]["contact_list_id"] ? "selected='selected'" : "";
-                        ?>
-                        <option value="<?php echo esc_attr($list['id']) . "|:|" . esc_attr($list['title']) ?>" <?php echo $selected ?>><?php echo esc_html($list['title']) ?></option>
-                        <?php
+                    $curr_contact_list_id = isset( $config["meta"]["contact_list_id"] ) ? $config["meta"]["contact_list_id"] : '';
+                    foreach( $lists as $list ) {
+						echo '<option value="'. esc_attr( self::get_cc_list_short_id( $list['id'] ) ) .'" '. selected( $list['id'] , $curr_contact_list_id, false ) .'>'. esc_html( $list['title'] ) .'</option>';
                     }
                     ?>
                   </select>
@@ -675,19 +675,16 @@ EOD;
                 }
                 ?>
             </div>
-
             <div id="constantcontact_form_container" valign="top" class="margin_vertical_10" <?php echo empty($config["meta"]["contact_list_id"]) ? "style='display:none;'" : "" ?>>
                 <label for="gf_constantcontact_form" class="left_header"><?php _e("Gravity Form", "gravity-forms-constant-contact"); ?> <?php gform_tooltip("constantcontact_gravity_form") ?></label>
 
                 <select id="gf_constantcontact_form" name="gf_constantcontact_form" onchange="SelectForm(jQuery('#gf_constantcontact_list').val(), jQuery(this).val());">
                 <option value=""><?php _e("Select a form", "gravity-forms-constant-contact"); ?> </option>
                 <?php
+                $curr_form_id = isset( $config['form_id'] ) ? $config['form_id'] : '';
                 $forms = RGFormsModel::get_forms();
-                foreach($forms as $form){
-                    $selected = absint($form->id) == $config["form_id"] ? "selected='selected'" : "";
-                    ?>
-                    <option value="<?php echo absint($form->id) ?>"  <?php echo $selected ?>><?php echo esc_html($form->title) ?></option>
-                    <?php
+                foreach( $forms as $form ){
+					echo '<option value="'. absint( $form->id ) .'" '. selected( absint( $form->id ), $curr_form_id, false ) .'>'. esc_html( $form->title ) .'</option>';
                 }
                 ?>
                 </select>
@@ -703,8 +700,11 @@ EOD;
                     if(!empty($config["form_id"])){
 
                         //getting list of all ConstantContact merge variables for the selected contact list
-                        if(empty($merge_vars))
-                            $merge_vars = $api->listMergeVars($list_id);
+                        if(empty($merge_vars)) {
+                        
+	                        $merge_vars = $api->listMergeVars( $list_id );
+                        }
+                            
 
                         //getting field map UI
                         echo self::get_field_mapping($config, $config["form_id"], $merge_vars);
@@ -729,12 +729,12 @@ EOD;
                             </tr>
                             <tr>
                                 <td>
-                                    <div id="constantcontact_optin_condition_field_container" <?php echo empty($config["meta"]["optin_enabled"]) ? "style='display:none'" : ""?>>
-                                        <div id="constantcontact_optin_condition_fields" <?php echo empty($selection_fields) ? "style='display:none'" : ""?>>
+                                    <div id="constantcontact_optin_condition_field_container" <?php echo empty($config["meta"]["optin_enabled"]) ? "style='display:none'" : "" ?>>
+                                        <div id="constantcontact_optin_condition_fields" <?php echo empty($selection_fields) ? "style='display:none'" : "" ?>>
                                             <?php _e("Export to Constant Contact if ", "gravity-forms-constant-contact") ?>
 
                                             <select id="constantcontact_optin_field_id" name="constantcontact_optin_field_id" class='optin_select' onchange='jQuery("#constantcontact_optin_value").html(GetFieldValues(jQuery(this).val(), "", 20));'><?php echo $selection_fields ?></select>
-                                            <select id="constantcontact_optin_operator" name="constantcontact_optin_operator" />
+                                            <select id="constantcontact_optin_operator" name="constantcontact_optin_operator" >
                                                 <option value="is" <?php echo @$config["meta"]["optin_operator"] == "is" ? "selected='selected'" : "" ?>><?php _e("is", "gravity-forms-constant-contact") ?></option>
                                                 <option value="isnot" <?php echo @$config["meta"]["optin_operator"] == "isnot" ? "selected='selected'" : "" ?>><?php _e("is not", "gravity-forms-constant-contact") ?></option>
                                             </select>
@@ -931,13 +931,13 @@ EOD;
 
         check_ajax_referer("gf_select_constantcontact_form", "gf_select_constantcontact_form");
         $form_id =  intval(@$_POST["form_id"]);
-        list($list_id, $list_name) =  explode("|:|", @$_POST["list_id"]);
+        $list_id = !empty( $_POST["list_id"] ) ? self::get_constantcontact_list_endpoint( $_POST["list_id"] ) : '';
         $setting_id =  intval(@$_POST["setting_id"]);
 
         $api = self::get_api();
         if(!$api)
             die("EndSelectForm();");
-
+        
         //getting list of all Constant Contact merge variables for the selected contact list
         $merge_vars = $api->listMergeVars($list_id);
 
@@ -952,6 +952,98 @@ EOD;
         //$fields = $form["fields"];
         die("EndSelectForm('" . str_replace("'", "\'", $str) . "', " . GFCommon::json_encode($form) . ");");
     }
+    
+    
+    /**
+     * Convert CC endpoint id into a number id to be used on forms (avoid issues with more strict servers)
+     * 
+     * @access public
+     * @static
+     * @param mixed $endpoint
+     * @return string $id
+     */
+    public static function get_cc_list_short_id( $endpoint ) {
+		
+		if( empty( $endpoint ) ) {
+			return '';
+		}
+		
+		if( false !== ( $pos = strrpos( rtrim( $endpoint, '/' ), '/' ) ) ) {
+			return trim( substr( $endpoint, $pos + 1 ) );
+		}
+		
+		return '';
+    }
+    
+    
+    /**
+     * Given a list short id (just the numeric part) return the list endpoint
+     * 
+     * @access public
+     * @static
+     * @param integer $list_id
+     * @return string $endpoint
+     */
+    public static function get_constantcontact_list_endpoint( $list_id ) {
+		
+		if( empty( $list_id ) ) {
+			return '';
+		}
+		
+		$api = self::get_api();
+
+		if( !$api ) {
+			return '';
+		}
+		
+		$lists = $api->CC_List()->getLists();
+		
+		foreach( $lists as $list ) {
+			if( self::get_cc_list_short_id( $list['id'] ) == $list_id ) {
+				return $list['id'];
+			}
+		
+		}
+		
+		return '';
+    }
+    
+    
+    /**
+     * Given a list short id (just the numeric part) return the list details (endpoint and title)
+     * 
+     * @access public
+     * @static
+     * @param mixed $list_id
+     * @return array (id, title)
+     */
+    public static function get_constantcontact_list_details( $list_id ) {
+		
+		if( empty( $list_id ) ) {
+			return '';
+		}
+		
+		$api = self::get_api();
+
+		if( !$api ) {
+			return '';
+		}
+		
+		$lists = $api->CC_List()->getLists();
+		
+		foreach( $lists as $list ) {
+			if( self::get_cc_list_short_id( $list['id'] ) == $list_id ) {
+				return array( $list['id'], $list['title'] );
+			}
+		
+		}
+		
+		return '';
+    }
+    
+    
+    
+    
 
     private static function get_field_mapping($config, $form_id, $merge_vars){
 
