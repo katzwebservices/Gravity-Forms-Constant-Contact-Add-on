@@ -1,7 +1,7 @@
 === Gravity Forms Constant Contact ===
 Tags: gravity forms, forms, gravity, form, crm, gravity form, mail, email, newsletter, Constant Contact, plugin, sidebar, widget, mailing list, API, email marketing, newsletters
 Requires at least: 2.8
-Tested up to: 3.8
+Tested up to: 3.8.1
 Stable tag: trunk
 Contributors: katzwebdesign, katzwebservices
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms+Constant%20Contact&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
@@ -70,7 +70,11 @@ remove_action('plugins_loaded', 'add_presstrends_GravityFormsConstantContact');
 
 == Upgrade Notice ==
 
-= 2.1.1 = 
+= 2.1.2 (February 5, 2014) =
+* Fixed: Some servers are very sensitive to the fact of posting a form where some values are urls (in this case, the Constant Contact list endpoint). This version replaces that way of posting and adds three new methods to convert endpoint's in short id's and backwards.
+* Fixed: Minor corrections (html, PHP warnings)
+
+= 2.1.1 =
 * Added: `gravityforms_constant_contact_change_date_format` filter to enable changing the format of the date field export to Constant Contact.
 
 = 2.1 =
@@ -107,7 +111,11 @@ remove_action('plugins_loaded', 'add_presstrends_GravityFormsConstantContact');
 
 == Changelog ==
 
-= 2.1.1 = 
+= 2.1.2 (February 5, 2014) =
+* Fixed: Some servers are very sensitive to the fact of posting a form where some values are urls (in this case, the Constant Contact list endpoint). This version replaces that way of posting and adds three new methods to convert endpoint's in short id's and backwards.
+* Fixed: Minor corrections (html, PHP warnings)
+
+= 2.1.1 =
 * Added: `gravityforms_constant_contact_change_date_format` filter to enable changing the format of the date field export to Constant Contact.
 
 = 2.1 =
