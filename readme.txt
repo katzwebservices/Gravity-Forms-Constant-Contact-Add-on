@@ -55,14 +55,6 @@ To disable this feature, add this code to your theme's `functions.php` file:
 add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false');
 `
 
-= This plugin uses PressTrends =
-By installing this plugin, you agree to allow gathering anonymous usage stats through PressTrends. The data gathered is the active Theme name, WordPress version, plugins installed, and other metrics. This allows the developer of this plugin to know what compatibility issues to test for.
-
-To remove PressTrends integration, add the code to your theme's functions.php file:
-
-`
-remove_action('plugins_loaded', 'add_presstrends_GravityFormsConstantContact');
-`
 
 == Screenshots ==
 
@@ -70,6 +62,7 @@ remove_action('plugins_loaded', 'add_presstrends_GravityFormsConstantContact');
 
 == Upgrade Notice ==
 
+* Removed PressTrends reporting
 = 2.1.2 (February 5, 2014) =
 * Fixed: Some servers are very sensitive to the fact of posting a form where some values are urls (in this case, the Constant Contact list endpoint). This version replaces that way of posting and adds three new methods to convert endpoint's in short id's and backwards.
 * Fixed: Minor corrections (html, PHP warnings)
