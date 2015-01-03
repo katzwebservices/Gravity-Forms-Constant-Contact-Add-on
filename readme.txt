@@ -62,9 +62,13 @@ add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false
 
 == Upgrade Notice ==
 
+= 2.2 = 
 * Fixed: Fatal error on activation for plugins located outside of `/plugins/` directory
 * Modified: Converted API to use WordPress remote request functionality - now works with or without `curl` enabled.
+* Tweak: Replace some images with Dashicons
 * Removed PressTrends reporting
+
+
 = 2.1.2 (February 5, 2014) =
 * Fixed: Some servers are very sensitive to the fact of posting a form where some values are urls (in this case, the Constant Contact list endpoint). This version replaces that way of posting and adds three new methods to convert endpoint's in short id's and backwards.
 * Fixed: Minor corrections (html, PHP warnings)

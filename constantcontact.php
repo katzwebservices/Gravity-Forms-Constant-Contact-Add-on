@@ -285,14 +285,16 @@ EOD;
             if($is_valid){
                 $message = sprintf(__("Valid username and password. Now go %sconfigure form integration with Constant Contact%s!", "gravity-forms-constant-contact"), '<a href="'.admin_url('admin.php?page=gf_constantcontact').'">', '</a>');
                 $class = 'updated notice';
-                $icon = self::get_base_url() . "/images/tick.png";
+                $icon = 'yes';
+                $style = "green";
             }
             else{
                 $message = __("Invalid username / password combo. Please try another combination. Please note: spaces in your username are not allowed. You can change your username in the My Account link when you are logged into your account, and this may remedy the problem.", "gravity-forms-constant-contact");
                 $class = 'error notice';
-                $icon =  self::get_base_url() . "/images/stop.png";
+                $icon =  'no';
+                $style = "red";
             }
-            $feedback_image = "<img src='{$icon}' />";
+            $feedback_image = "<i class='dashicons dashicons-{$icon}' style='color:{$style};' title='{$icon}'></i>";
         }
 
 		if( !empty($message) ) {
@@ -692,7 +694,7 @@ EOD;
                 ?>
                 </select>
                 &nbsp;&nbsp;
-                <img src="<?php echo GFConstantContact::get_base_url() ?>/images/loading.gif" id="constantcontact_wait" style="display: none;"/>
+                <span class="spinner" id="constantcontact_wait" style="display:none; float:none; position:absolute; margin-top: .33em;"></span>
             </div>
             <div id="constantcontact_field_group" valign="top" <?php echo empty($config["meta"]["contact_list_id"]) || empty($config["form_id"]) ? "style='display:none;'" : "" ?>>
                 <div id="constantcontact_field_container" valign="top" class="margin_vertical_10" >
@@ -700,6 +702,7 @@ EOD;
 
                     <div id="constantcontact_field_list">
                     <?php
+                    $selection_fields = '';
                     if(!empty($config["form_id"])){
 
                         //getting list of all ConstantContact merge variables for the selected contact list
@@ -799,7 +802,7 @@ EOD;
                     return;
                 }
 
-                jQuery("#constantcontact_wait").show();
+                jQuery("#constantcontact_wait").css('display', 'inline-block');
                 jQuery("#constantcontact_field_group").slideUp();
 
                 var mysack = new sack("<?php bloginfo( 'wpurl' ); ?>/wp-admin/admin-ajax.php" );
@@ -1294,7 +1297,7 @@ class CC_GF_SuperClass extends CC_Utility {
         if(isset($object->apikey)) {
 		  $object->requestLogin = $object->apikey.'%'.rawurlencode($object->login).':'.$object->password;
         }
-		$object->curl_debug = isset($_GET['debug']);
+		$object->curl_debug = isset($_GET['debug']) && ( function_exists('current_user_can') && current_user_can( 'manage_options' ) );
 	}
 
 	public function listSubscribe($id, $merge_vars, $email_type='html') {
