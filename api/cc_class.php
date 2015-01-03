@@ -96,6 +96,7 @@
             $request = array(
                 'method' => $type,
                 'sslverify' => false, // don't screw up with SSL requests
+                'timeout' => 10,
                 'user-agent' => "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)",
                 'headers' => array(
                     'Authorization' => 'Basic ' . base64_encode( $this->requestLogin ),
