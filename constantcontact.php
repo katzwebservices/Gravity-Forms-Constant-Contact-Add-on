@@ -25,8 +25,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 
-include_once('presstrends.php');
-
 add_action('init',  array('GFConstantContact', 'init'));
 register_activation_hook( __FILE__, array("GFConstantContact", "add_permissions"));
 
@@ -38,10 +36,13 @@ class GFConstantContact {
     private static $slug = "gravity-forms-constant-contact";
     private static $version = "2.1.1";
     private static $min_gravityforms_version = "1.3.9";
+    public  static $plugin_dir_path;
 
     //Plugin starting point. Will load appropriate files
     public static function init(){
 	    global $pagenow;
+
+        self::$plugin_dir_path = plugin_dir_path(__FILE__);
 
 		if($pagenow === 'plugins.php') {
 			add_action("admin_notices", array('GFConstantContact', 'is_gravity_forms_installed'), 10);
@@ -177,7 +178,7 @@ EOD;
 
     public static function flush_version_info(){
         if(!class_exists("RGConstantContactUpgrade"))
-            require_once("plugin-upgrade.php");
+            require_once( self::get_base_path() . "plugin-upgrade.php");
 
         RGConstantContactUpgrade::set_version_info(false);
     }
@@ -189,14 +190,14 @@ EOD;
 
         //loading upgrade lib
         if(!class_exists("RGConstantContactUpgrade"))
-            require_once("plugin-upgrade.php");
+            require_once(self::get_base_path()."plugin-upgrade.php");
 
         RGConstantContactUpgrade::display_changelog(self::$slug, self::get_key(), self::$version);
     }
 
     public static function check_update($update_plugins_option){
         if(!class_exists("RGConstantContactUpgrade"))
-            require_once("plugin-upgrade.php");
+            require_once(self::get_base_path()."plugin-upgrade.php");
 
         return RGConstantContactUpgrade::check_update(self::$path, self::$slug, self::$url, self::$slug, self::get_key(), self::$version, $update_plugins_option);
     }
@@ -250,7 +251,7 @@ EOD;
     public static function settings_page(){
 
         if(!class_exists("RGConstantContactUpgrade"))
-            require_once("plugin-upgrade.php");
+            require_once(self::get_base_path()."plugin-upgrade.php");
 
         if(!empty($_POST["uninstall"])){
             check_admin_referer("uninstall", "gf_constantcontact_uninstall");
@@ -277,7 +278,6 @@ EOD;
         	if(isset($_POST["gf_constantcontact_submit"])) {
 	            $is_valid = self::is_valid_login($settings["username"], $settings["password"]);
                 $text = $is_valid ? 'Settings Saved: Success' : 'Settings Saved: Error';
-                do_action( 'presstrends_event_gfcc', $text);
 	        } else {
 		        $is_valid = get_option('gravity_forms_cc_valid_api');
 	        }
@@ -295,7 +295,7 @@ EOD;
             $feedback_image = "<img src='{$icon}' />";
         }
 
-		if($message) {
+		if( !empty($message) ) {
 			$message = str_replace('Api', 'API', $message);
 	        ?>
 	        <div id="message" class="<?php echo $class ?>"><?php echo wpautop($message); ?></div>
@@ -404,7 +404,10 @@ EOD;
 <?php
         //ensures valid credentials were entered in the settings page
         if(!get_option('gravity_forms_cc_valid_api')) {
-            _e('<div class="updated" id="message"><p>'.sprintf("To get started, please configure your %sConstant Contact Settings%s.", '<a href="admin.php?page=gf_settings&addon=Constant+Contact">', "</a></p></div>"), "gravity-forms-constant-contact");
+            echo '<div class="wrap clear" style="padding-top: 1em;"><h3>';
+            echo sprintf( __( "To get started, please configure your %sConstant Contact Settings%s.", "gravity-forms-constant-contact"), '<a href="admin.php?page=gf_settings&addon=Constant+Contact">', "</a>");
+            echo '</h3></div>';
+            echo '</div>'; // close .wrap
 	        return;
         }
 ?>
@@ -550,7 +553,7 @@ EOD;
 	private static function get_api(){
 
         if(!class_exists("CC_Utility")){
-            require_once("api/cc_class.php");
+            require_once( self::get_base_path() ."api/cc_class.php");
         }
 
         $api = new CC_GF_SuperClass();
@@ -656,7 +659,7 @@ EOD;
 
                 //getting all contact lists
                 $lists = $api->CC_List()->getLists();
-                
+
                 if (empty($lists)){
                     echo __("Could not load Constant Contact contact lists. <br/>Error: ", "gravity-forms-constant-contact") . $api->errorMessage;
                 }
@@ -701,10 +704,10 @@ EOD;
 
                         //getting list of all ConstantContact merge variables for the selected contact list
                         if(empty($merge_vars)) {
-                        
+
 	                        $merge_vars = $api->listMergeVars( $list_id );
                         }
-                            
+
 
                         //getting field map UI
                         echo self::get_field_mapping($config, $config["form_id"], $merge_vars);
@@ -937,7 +940,7 @@ EOD;
         $api = self::get_api();
         if(!$api)
             die("EndSelectForm();");
-        
+
         //getting list of all Constant Contact merge variables for the selected contact list
         $merge_vars = $api->listMergeVars($list_id);
 
@@ -952,98 +955,98 @@ EOD;
         //$fields = $form["fields"];
         die("EndSelectForm('" . str_replace("'", "\'", $str) . "', " . GFCommon::json_encode($form) . ");");
     }
-    
-    
+
+
     /**
      * Convert CC endpoint id into a number id to be used on forms (avoid issues with more strict servers)
-     * 
+     *
      * @access public
      * @static
      * @param mixed $endpoint
      * @return string $id
      */
     public static function get_cc_list_short_id( $endpoint ) {
-		
+
 		if( empty( $endpoint ) ) {
 			return '';
 		}
-		
+
 		if( false !== ( $pos = strrpos( rtrim( $endpoint, '/' ), '/' ) ) ) {
 			return trim( substr( $endpoint, $pos + 1 ) );
 		}
-		
+
 		return '';
     }
-    
-    
+
+
     /**
      * Given a list short id (just the numeric part) return the list endpoint
-     * 
+     *
      * @access public
      * @static
      * @param integer $list_id
      * @return string $endpoint
      */
     public static function get_constantcontact_list_endpoint( $list_id ) {
-		
+
 		if( empty( $list_id ) ) {
 			return '';
 		}
-		
+
 		$api = self::get_api();
 
 		if( !$api ) {
 			return '';
 		}
-		
+
 		$lists = $api->CC_List()->getLists();
-		
+
 		foreach( $lists as $list ) {
 			if( self::get_cc_list_short_id( $list['id'] ) == $list_id ) {
 				return $list['id'];
 			}
-		
+
 		}
-		
+
 		return '';
     }
-    
-    
+
+
     /**
      * Given a list short id (just the numeric part) return the list details (endpoint and title)
-     * 
+     *
      * @access public
      * @static
      * @param mixed $list_id
      * @return array (id, title)
      */
     public static function get_constantcontact_list_details( $list_id ) {
-		
+
 		if( empty( $list_id ) ) {
 			return '';
 		}
-		
+
 		$api = self::get_api();
 
 		if( !$api ) {
 			return '';
 		}
-		
+
 		$lists = $api->CC_List()->getLists();
-		
+
 		foreach( $lists as $list ) {
 			if( self::get_cc_list_short_id( $list['id'] ) == $list_id ) {
 				return array( $list['id'], $list['title'] );
 			}
-		
+
 		}
-		
+
 		return '';
     }
-    
-    
-    
-    
+
+
+
+
 
     private static function get_field_mapping($config, $form_id, $merge_vars){
 
@@ -1130,7 +1133,7 @@ EOD;
             return;
 
 		//loading data class
-        require_once(self::get_base_path() . "/data.php");
+        require_once( self::get_base_path() . "/data.php");
 
         //getting all active feeds
         $feeds = GFConstantContactData::get_feed_by_form($form["id"], true);
@@ -1254,13 +1257,14 @@ EOD;
 
     //Returns the physical path of the plugin's root folder
     static public function get_base_path(){
-        $folder = basename(dirname(__FILE__));
-        return WP_PLUGIN_DIR . "/" . $folder;
+        return plugin_dir_path(__FILE__) . '/';
     }
 
 }
 
-if(!class_exists("CC_Utility")) { require_once(GFConstantContact::get_base_path()."/api/cc_class.php"); }
+if(!class_exists("CC_Utility")) {
+    require_once(GFConstantContact::get_base_path()."/api/cc_class.php");
+}
 
 class CC_GF_SuperClass extends CC_Utility {
 

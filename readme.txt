@@ -62,6 +62,7 @@ add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false
 
 == Upgrade Notice ==
 
+* Fixed: Fatal error on activation for plugins located outside of `/plugins/` directory
 * Removed PressTrends reporting
 = 2.1.2 (February 5, 2014) =
 * Fixed: Some servers are very sensitive to the fact of posting a form where some values are urls (in this case, the Constant Contact list endpoint). This version replaces that way of posting and adds three new methods to convert endpoint's in short id's and backwards.
