@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms Constant Contact Add-On
 Plugin URI: https://katz.co/plugins/gravity-forms-constant-contact/
 Description: Integrates Gravity Forms with Constant Contact allowing form submissions to be automatically sent to your Constant Contact account.
-Version: 2.1.3
+Version: 2.1.1
 Author: Katz Web Services, Inc.
 Author URI: http://www.katzwebservices.com
 
@@ -79,7 +79,7 @@ class GFConstantContact {
 
             //creates a new Settings page on Gravity Forms' settings screen
             if(self::has_access("gravityforms_constantcontact")){
-                RGForms::add_settings_page("Constant Contact", array("GFConstantContact", "settings_page"), self::get_base_url() . "/images/CTCT_horizontal_logo.png");
+                RGForms::add_settings_page("Constant Contact", array("GFConstantContact", "settings_page"), self::get_base_url() . "/images/ctct_logo_600x90.png");
             }
         }
 
@@ -305,14 +305,9 @@ EOD;
         }
 
         ?>
-        <style>
-            .valid_credentials{color:green;}
-            .invalid_credentials{color:red;}
-        </style>
-
         <form method="post" action="">
             <?php wp_nonce_field("update", "gf_constantcontact_update") ?>
-            <a href='http://katz.si/6p' target='_blank'><img alt="<?php _e("Constant Contact", "gravity-forms-constant-contact") ?>" style="display:block; margin-right:10px;" src="<?php echo self::get_base_url() ?>/images/CTCT_horizontal_logo.png" width="281" height="47" /></a>
+            <?php self::ctct_logo(); ?>
             <h2><?php _e("Constant Contact Account Information", "gravity-forms-constant-contact") ?></h2>
             <h3><?php printf(__("If you don't have a Constant Contact account, you can %ssign up for one here%s.", 'gravity-forms-constant-contact'), "<a href='http://katz.si/6p' target='_blank'>" , "</a>"); ?></h3>
             <p style="text-align: left; font-size:1.2em; line-height:1.4">
@@ -340,6 +335,10 @@ EOD;
             </table>
         </form>
 
+        <?php
+            include_once self::get_base_path().'gravityview-info.php';
+        ?>
+
         <form action="" method="post">
             <?php wp_nonce_field("uninstall", "gf_constantcontact_uninstall") ?>
             <?php if(GFCommon::current_user_can_any("gravityforms_constantcontact_uninstall")){ ?>
@@ -363,6 +362,11 @@ EOD;
             self::edit_page( $_GET['id'] );
         else
             self::list_page();
+    }
+
+    private static function ctct_logo() { ?>
+        <div><a href='http://katz.si/6p' target='_blank' style="background: transparent url(<?php echo self::get_base_url() ?>/images/ctct_logo_600x90.png) left top no-repeat; background-size: contain; width:300px; height:45px; display:block; text-indent: -9999px; overflow:hidden; direction: ltr; margin:15px 0 10px;">CTCT</a></div>
+        <?php
     }
 
     //Displays the constantcontact feeds list page
@@ -394,12 +398,13 @@ EOD;
 
         ?>
         <div class="wrap">
-            <h2 style="line-height:71px;"><a href='http://katz.si/6p' target='_blank'><img alt="<?php _e("Constant Contact", "gravity-forms-constant-contact") ?>" style="display:block; margin-right:10px;" src="<?php echo self::get_base_url() ?>/images/CTCT_horizontal_logo.png" width="281" height="47" /></a><?php _e("Constant Contact Feeds", "gravity-forms-constant-contact") ?>
-            <a class="button add-new-h2" href="admin.php?page=gf_constantcontact&view=edit&id=0"><?php _e("Add New", "gravity-forms-constant-contact") ?></a>
-            </h2>
+
+            <?php self::ctct_logo(); ?>
+
+            <h2><?php _e("Constant Contact Feeds", "gravity-forms-constant-contact") ?> <a class="button add-new-h2" href="admin.php?page=gf_constantcontact&amp;view=edit&amp;id=0"><?php _e("Add New", "gravity-forms-constant-contact") ?></a></h2>
 
 			<ul class="subsubsub">
-	            <li><a href="<?php echo admin_url('admin.php?page=gf_settings&addon=Constant+Contact'); ?>"><?php _e('Constant Contact Settings', 'gravity-forms-constant-contact'); ?></a> |</li>
+	            <li><a href="<?php echo admin_url('admin.php?page=gf_settings&amp;addon=Constant+Contact'); ?>"><?php _e('Constant Contact Settings', 'gravity-forms-constant-contact'); ?></a> |</li>
 	            <li><a href="<?php echo admin_url('admin.php?page=gf_constantcontact'); ?>" class="current"><?php _e('Constant Contact Feeds', 'gravity-forms-constant-contact'); ?></a></li>
 	        </ul>
 
@@ -585,7 +590,8 @@ EOD;
             var form = Array();
         </script>
         <div class="wrap">
-            <h2 style="line-height:71px;"><a href='http://katz.si/6p' target='_blank'><img alt="<?php _e("Constant Contact", "gravity-forms-constant-contact") ?>" style="display:block; margin-right:10px;" src="<?php echo self::get_base_url() ?>/images/CTCT_horizontal_logo.png" width="281" height="47" /></a><?php _e("Constant Contact Feed", "gravity-forms-constant-contact") ?></h2>
+            <?php self::ctct_logo(); ?>
+            <h2><?php _e("Constant Contact Feed", "gravity-forms-constant-contact") ?></h2>
 		<div class="clear"></div>
         <?php
 

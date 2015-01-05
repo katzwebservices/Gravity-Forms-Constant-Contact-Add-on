@@ -66,6 +66,7 @@ add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false
 * Fixed: Fatal error on activation for plugins located outside of `/plugins/` directory
 * Modified: Converted API to use WordPress remote request functionality - now works with or without `curl` enabled.
 * Tweak: Replace some images with Dashicons
+* Tweak: Update Constant Contact logo for Retina displays
 * Removed PressTrends reporting
 
 
