@@ -62,7 +62,7 @@ add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false
 
 == Upgrade Notice ==
 
-= 2.2 = 
+= 2.2 & 2.2.1 (January 5, 2015) = 
 * Fixed: Fatal error on activation for plugins located outside of `/plugins/` directory
 * Modified: Converted API to use WordPress remote request functionality - now works with or without `curl` enabled.
 * Fixed: PHP notices
@@ -70,6 +70,7 @@ add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false
 * Tweak: Update Constant Contact logo for Retina displays
 * Removed PressTrends reporting
 * Added: Intro to GravityView plugin
+* Tweak: Only fetch the API if a feed is going to be exported to CTCT
 
 
 = 2.1.2 (February 5, 2014) =

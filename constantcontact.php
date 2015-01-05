@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms Constant Contact Add-On
 Plugin URI: https://katz.co/plugins/gravity-forms-constant-contact/
 Description: Integrates Gravity Forms with Constant Contact allowing form submissions to be automatically sent to your Constant Contact account.
-Version: 2.2
+Version: 2.2.1
 Author: Katz Web Services, Inc.
 Author URI: http://www.katzwebservices.com
 
@@ -34,7 +34,7 @@ class GFConstantContact {
     private static $path = "gravity-forms-constant-contact/constantcontact.php";
     private static $url = "http://www.gravityforms.com";
     private static $slug = "gravity-forms-constant-contact";
-    private static $version = "2.2";
+    private static $version = "2.2.1";
     private static $min_gravityforms_version = "1.3.9";
     public  static $plugin_dir_path;
 
@@ -1136,20 +1136,29 @@ EOD;
 
     public static function export($entry, $form){
 
-        //Login to Constant Contact
-        $api = self::get_api();
-        if(!$api)
-            return;
-
-		//loading data class
+        //loading data class
         require_once( self::get_base_path() . "/data.php");
 
         //getting all active feeds
         $feeds = GFConstantContactData::get_feed_by_form($form["id"], true);
 
         foreach($feeds as $feed){
+
             //only export if user has opted in
             if(self::is_optin($form, $feed)) {
+
+                if( !isset( $api ) ) {
+
+                    //Login to Constant Contact
+                    $api = self::get_api();
+
+                    // If no API, don't process
+                    if(!$api) {
+                        self::add_note($entry["id"], __('Not added/updated in Constant Contact; there was an error fetching the API.', 'gravity-forms-constant-contact'));
+                        continue;
+                    }
+                }
+
             	self::export_feed($entry, $form, $feed, $api);
             }
         }
@@ -1177,10 +1186,16 @@ EOD;
 
         $retval = $api->listSubscribe($feed["meta"]["contact_list_id"], $merge_vars, "html");
 
-       if(!empty($retval)) {
+       if( !is_wp_error( $retval ) && !empty($retval)) {
            self::add_note($entry["id"], __('Successfully added/updated in Constant Contact.', 'gravity-forms-constant-contact'));
         } else {
-            self::add_note($entry["id"], __('Errors when adding/updating in Constant Contact.', 'gravity-forms-constant-contact'));
+
+            $error = '';
+            if( is_wp_error( $retval ) ) {
+                $error = ': '.$retval->get_error_message();
+            }
+
+            self::add_note($entry["id"], __('Errors when adding/updating in Constant Contact', 'gravity-forms-constant-contact') . $error );
         }
     }
 
