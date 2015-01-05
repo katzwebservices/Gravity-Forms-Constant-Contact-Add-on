@@ -1,10 +1,10 @@
 === Gravity Forms Constant Contact ===
 Tags: gravity forms, forms, gravity, form, crm, gravity form, mail, email, newsletter, Constant Contact, plugin, sidebar, widget, mailing list, API, email marketing, newsletters
-Requires at least: 2.8
-Tested up to: 3.8.1
+Requires at least: 3.3
+Tested up to: 4.1
 Stable tag: trunk
 Contributors: katzwebdesign, katzwebservices
-Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=zackkatz%40gmail%2ecom&item_name=Gravity%20Forms+Constant%20Contact&no_shipping=0&no_note=1&tax=0&currency_code=USD&lc=US&bn=PP%2dDonationsBF&charset=UTF%2d8
+Donate link: https://gravityview.co/?utm_source=plugin&utm_medium=readme&utm_content=donatelink&utm_campaign=gravity-forms-constant-contact
 
 Add contacts to your Constant Contact mailing list when they submit a Gravity Forms form.
 
@@ -19,7 +19,7 @@ Integrate your Gravity Forms forms so that when users submit a form entry, the e
 
 ### You may also be interested in:
 
-* <a href="http://wordpress.org/extend/plugins/gravity-forms-addons/">Gravity Forms Directory & Addons Plugin</a> - Turn Gravity Forms into a directory plugin, and extend the functionality
+* __[GravityView](https://gravityview.co/?utm_source=plugin&utm_medium=readme&utm_content=alsointerestedlink&utm_campaign=gravity-forms-constant-contact)__ - Display your Gravity Forms entries; easily turn Gravity Forms into a directory plugin.
 
 == Installation ==
 1. Upload plugin files to your plugins folder, or install using WordPress' built-in Add New Plugin installer.
@@ -65,9 +65,11 @@ add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false
 = 2.2 = 
 * Fixed: Fatal error on activation for plugins located outside of `/plugins/` directory
 * Modified: Converted API to use WordPress remote request functionality - now works with or without `curl` enabled.
+* Fixed: PHP notices
 * Tweak: Replace some images with Dashicons
 * Tweak: Update Constant Contact logo for Retina displays
 * Removed PressTrends reporting
+* Added: Intro to GravityView plugin
 
 
 = 2.1.2 (February 5, 2014) =
