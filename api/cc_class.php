@@ -103,6 +103,7 @@
                     'Content-Type' => 'application/atom+xml',
                     'Content-Length' => strlen($parameter)
                 ),
+                'body' => $parameter,
             );
 
             $response = wp_remote_request( $request_url, $request );
