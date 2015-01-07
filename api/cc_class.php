@@ -84,47 +84,38 @@
 
         /**
         * Private function used to send requests to ConstantContact server
-        * @param string $request - is the URL where the request will be made
+        * @param string $request_url - is the URL where the request will be made
         * @param string $parameter - if it is not empty then this parameter will be sent using POST method
         * @param string $type - GET/POST/PUT/DELETE
         * @return a string containing server output/response
         */
-        protected function doServerCall($request, $parameter = '', $type = "GET") {
-            $ch = curl_init();
-            $request = str_replace('http://', 'https://', $request);
-            // Convert id URI to BASIC compliant
-            curl_setopt($ch, CURLOPT_URL, $request);
-            curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
-            curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-            curl_setopt($ch, CURLOPT_USERPWD, $this->requestLogin);
-            # curl_setopt ($ch, CURLOPT_FOLLOWLOCATION  ,1);
-            curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, Array("Content-Type:application/atom+xml", 'Content-Length: ' . strlen($parameter)));
-            curl_setopt($ch, CURLOPT_FAILONERROR, 1);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-            switch ($type) {
-                case 'POST':
-                    curl_setopt($ch, CURLOPT_POST, 1);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, $parameter);
-                    break;
-                case 'PUT':
-                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, $parameter);
-                    break;
-                case 'DELETE':
-                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-                    break;
-                default:
-                    curl_setopt($ch, CURLOPT_HTTPGET, 1);
-                    break;
+        protected function doServerCall($request_url, $parameter = '', $type = "GET") {
+
+            $request_url = str_replace('http://', 'https://', $request_url);
+
+            $request = array(
+                'method' => $type,
+                'sslverify' => false, // don't screw up with SSL requests
+                'timeout' => 10,
+                'user-agent' => "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)",
+                'headers' => array(
+                    'Authorization' => 'Basic ' . base64_encode( $this->requestLogin ),
+                    'Content-Type' => 'application/atom+xml',
+                    'Content-Length' => strlen($parameter)
+                ),
+                'body' => $parameter,
+            );
+
+            $response = wp_remote_request( $request_url, $request );
+
+            if( empty( $response ) || is_wp_error( $response ) ) {
+                return false;
+            } else if ( wp_remote_retrieve_response_code( $response ) > 299 ) {
+                return false;
+            } else {
+                return wp_remote_retrieve_body( $response );
             }
 
-           $emessage = curl_exec($ch);
-           if ($this->curl_debug) {   echo $error = curl_error($ch);   }
-           curl_close($ch);
-
-           return $emessage;
         }
 
     }
