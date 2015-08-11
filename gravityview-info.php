@@ -85,7 +85,7 @@ if( $hide_promo ) { return; }
 		<?php
 
 
-		echo '<h3>'. sprintf( esc_html__('Do you have form data you want to show on your website? Have you ever copyied and pasted entries into your site? That&rsquo;s illogical! %sGravityView%s is here.', 'gravity-forms-constant-contact' ), '<a href="https://gravityview.co/pricing/?utm_source=plugin&amp;utm_medium=settings&amp;utm_content=subheadinglink&amp;utm_campaign=gravity-forms-constant-contact">', '</a>' ) .'</h3>';
+		echo '<h3>'. sprintf( esc_html__('Do you have form data you want to show on your website? Have you ever copied and pasted entries into your site? That&rsquo;s illogical! %sGravityView%s is here.', 'gravity-forms-constant-contact' ), '<a href="https://gravityview.co/pricing/?utm_source=plugin&amp;utm_medium=settings&amp;utm_content=subheadinglink&amp;utm_campaign=gravity-forms-constant-contact">', '</a>' ) .'</h3>';
 
 		?>
 
