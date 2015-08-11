@@ -118,6 +118,20 @@ add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false
 
 == Changelog ==
 
+= 2.2.2 (August 11, 2015) =
+* Fixed: Invalid login issue (thanks [@robertark](https://github.com/robertark)!)
+* Confirmed plugin compatibility with WordPress 4.3
+
+= 2.2 & 2.2.1 (January 5, 2015) =
+* Fixed: Fatal error on activation for plugins located outside of `/plugins/` directory
+* Modified: Converted API to use WordPress remote request functionality - now works with or without `curl` enabled.
+* Fixed: PHP notices
+* Tweak: Replace some images with Dashicons
+* Tweak: Update Constant Contact logo for Retina displays
+* Removed PressTrends reporting
+* Added: Intro to GravityView plugin
+* Tweak: Only fetch the API if a feed is going to be exported to CTCT
+
 = 2.1.2 (February 5, 2014) =
 * Fixed: Some servers are very sensitive to the fact of posting a form where some values are urls (in this case, the Constant Contact list endpoint). This version replaces that way of posting and adds three new methods to convert endpoint's in short id's and backwards.
 * Fixed: Minor corrections (html, PHP warnings)
