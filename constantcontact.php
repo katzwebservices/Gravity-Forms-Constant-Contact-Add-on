@@ -547,7 +547,7 @@ EOD;
         $api->password = trim($password);
 		$api->apiPath = str_replace('USERNAME', trim($user), $api->apiPath);
 		$api->actionBy = 'ACTION_BY_CONTACT';
-		$api->requestLogin = $api->apikey.'%'.rawurlencode($user).':'.$password;
+		$api->requestLogin = $api->apikey.'%'.$user.':'.$password;
 
 		$lists = @$api->getAccountLists();
 
@@ -1305,7 +1305,7 @@ class CC_GF_SuperClass extends CC_Utility {
 		$object->login = trim($settings['username']);
         $object->password = trim($settings['password']);
         if(isset($object->apiPath)) {
-		  $object->apiPath = str_replace('USERNAME', '', (string)$object->apiPath).rawurlencode(trim($settings['username']));
+		  $object->apiPath = str_replace('USERNAME', '', (string)$object->apiPath).trim($settings['username']);
         }
 
 		$actionBy = apply_filters('gravity_forms_constant_contact_action_by', 'ACTION_BY_CONTACT');
@@ -1316,7 +1316,7 @@ class CC_GF_SuperClass extends CC_Utility {
 	    }
 
         if(isset($object->apikey)) {
-		  $object->requestLogin = $object->apikey.'%'.rawurlencode($object->login).':'.$object->password;
+		  $object->requestLogin = $object->apikey.'%'.$object->login.':'.$object->password;
         }
 		$object->curl_debug = isset($_GET['debug']) && ( function_exists('current_user_can') && current_user_can( 'manage_options' ) );
 	}
