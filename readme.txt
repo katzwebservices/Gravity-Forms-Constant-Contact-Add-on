@@ -1,7 +1,7 @@
 === Gravity Forms Constant Contact ===
 Tags: gravity forms, forms, gravity, form, crm, gravity form, mail, email, newsletter, Constant Contact, plugin, sidebar, widget, mailing list, API, email marketing, newsletters
 Requires at least: 3.3
-Tested up to: 4.1
+Tested up to: 4.3
 Stable tag: trunk
 Contributors: katzwebdesign, katzwebservices
 Donate link: https://gravityview.co/?utm_source=plugin&utm_medium=readme&utm_content=donatelink&utm_campaign=gravity-forms-constant-contact
@@ -61,6 +61,10 @@ add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false
 1. Users can choose which Constant Contact lists they are added to.
 
 == Upgrade Notice ==
+
+= 2.2.2 (August 11, 2015) =
+* Fixed: Invalid login issue (thanks [@robertark](https://github.com/robertark)!)
+* Confirmed plugin compatibility with WordPress 4.3
 
 = 2.2 & 2.2.1 (January 5, 2015) = 
 * Fixed: Fatal error on activation for plugins located outside of `/plugins/` directory

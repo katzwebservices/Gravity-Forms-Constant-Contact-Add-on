@@ -38,7 +38,7 @@
 
         public function __construct() {
             //when the object is getting initialized, the login string must be created as API_KEY%LOGIN:PASSWORD
-            $this->requestLogin = $this->apikey."%".rawurlencode($this->login).":".$this->password;
+            $this->requestLogin = $this->apikey."%".$this->login.":".$this->password;
             $this->apiPath = $this->apiPath.$this->login;
         }
 

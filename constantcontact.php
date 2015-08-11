@@ -3,12 +3,12 @@
 Plugin Name: Gravity Forms Constant Contact Add-On
 Plugin URI: https://katz.co/plugins/gravity-forms-constant-contact/
 Description: Integrates Gravity Forms with Constant Contact allowing form submissions to be automatically sent to your Constant Contact account.
-Version: 2.2.1
+Version: 2.2.2
 Author: Katz Web Services, Inc.
 Author URI: http://www.katzwebservices.com
 
 ------------------------------------------------------------------------
-Copyright 2013 Katz Web Services, Inc.
+Copyright 2015 Katz Web Services, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ class GFConstantContact {
     private static $path = "gravity-forms-constant-contact/constantcontact.php";
     private static $url = "http://www.gravityforms.com";
     private static $slug = "gravity-forms-constant-contact";
-    private static $version = "2.2.1";
+    private static $version = "2.2.2";
     private static $min_gravityforms_version = "1.3.9";
     public  static $plugin_dir_path;
 
@@ -547,7 +547,7 @@ EOD;
         $api->password = trim($password);
 		$api->apiPath = str_replace('USERNAME', trim($user), $api->apiPath);
 		$api->actionBy = 'ACTION_BY_CONTACT';
-		$api->requestLogin = $api->apikey.'%'.rawurlencode($user).':'.$password;
+		$api->requestLogin = $api->apikey.'%'.$user.':'.$password;
 
 		$lists = @$api->getAccountLists();
 
@@ -1305,7 +1305,7 @@ class CC_GF_SuperClass extends CC_Utility {
 		$object->login = trim($settings['username']);
         $object->password = trim($settings['password']);
         if(isset($object->apiPath)) {
-		  $object->apiPath = str_replace('USERNAME', '', (string)$object->apiPath).rawurlencode(trim($settings['username']));
+		  $object->apiPath = str_replace('USERNAME', '', (string)$object->apiPath).trim($settings['username']);
         }
 
 		$actionBy = apply_filters('gravity_forms_constant_contact_action_by', 'ACTION_BY_CONTACT');
@@ -1316,7 +1316,7 @@ class CC_GF_SuperClass extends CC_Utility {
 	    }
 
         if(isset($object->apikey)) {
-		  $object->requestLogin = $object->apikey.'%'.rawurlencode($object->login).':'.$object->password;
+		  $object->requestLogin = $object->apikey.'%'.$object->login.':'.$object->password;
         }
 		$object->curl_debug = isset($_GET['debug']) && ( function_exists('current_user_can') && current_user_can( 'manage_options' ) );
 	}
