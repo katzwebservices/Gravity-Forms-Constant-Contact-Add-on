@@ -230,7 +230,7 @@
      * @return subscriber`s id if it exists or false if it doesn't
      */
 	 public	function subscriberExists($email = '') {
-		 $call = $this->apiPath.'/contacts?email='.$email;
+		 $call = $this->apiPath.'/contacts?email='.rawurlencode( $email );
 		 $return = $this->doServerCall($call);
 		 $xml = simplexml_load_string($return);
 		 $id = $xml->entry->id;
@@ -249,7 +249,7 @@
 			$contacts['items'] = array();
 
 			if (! empty($email)) {
-				$call = $this->apiPath.'/contacts?email='.$email;
+				$call = $this->apiPath.'/contacts?email='.rawurlencode( $email );
 			} else {
 				if (! empty($page)) {
 					$call = $this->apiPath.$page;
