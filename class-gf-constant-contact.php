@@ -137,12 +137,13 @@ class GF_Constant_Contact extends GFFeedAddOn {
 	public function upgrade( $previous_version = '' ) {
 		global $wpdb;
 
+		$already_migrated = get_option( 'gravityforms_cc_migrated' );
+
 		// Already processed
-		if ( empty( get_option( 'gravityforms_cc_migrated' ) ) {
+		if ( ! empty( $already_migrated ) ) {
 			return;
 		}
 
-		$old_addon_table_name = $wpdb->prefix . "rg_constantcontact";
 		//
 		// First, encrypt the login and password
         //
@@ -154,27 +155,38 @@ class GF_Constant_Contact extends GFFeedAddOn {
 
 			update_option( 'gf_constantcontact_settings', $settings );
 		}
+
+        //
+        // Next, migrate old feeds
+        //
+		$old_addon_table_name = $wpdb->prefix . "rg_constantcontact";
         $form_table_name = GFFormsModel::get_form_table_name();
 
         $sql = "SELECT s.is_active, s.form_id, s.meta
             FROM $old_addon_table_name s
             INNER JOIN $form_table_name f ON s.form_id = f.id";
 
-        $old_feeds = $wpdb->get_results( $sql, ARRAY_A );
+        // Prevent "table doesn't exist" error
+        $suppress_errors_backup = $wpdb->suppress_errors;
+
+		$wpdb->suppress_errors = true;
+
+		$old_feeds = $wpdb->get_results( $sql, ARRAY_A );
 
         if( $old_feeds ) {
+
+            // Migrate old feed to new feed strucutre
 	        foreach ( $old_feeds as $old_feed ) {
 
 		        $meta = maybe_unserialize( $old_feed['meta'] );
 
-		        // Single list => allow multiple lists
+		        // Didn't use to have feed names
+		        $meta['feed_name'] = $this->get_default_feed_name();
+
+		        // Single list (string endpoint URL) => array of list IDs
 		        $meta['lists'] = array(
 			        $this->get_list_short_id( rgar( $meta, 'contact_list_id' ) )
 		        );
-		        unset( $meta['contact_list_id'] );
-
-		        $meta['feed_name'] = $this->get_default_feed_name();
-		        unset( $meta['contact_list_name'] );
 
 		        // Update fields
 		        foreach ( (array) rgar( $meta, 'field_map' ) as $key => $field_id ) {
@@ -201,9 +213,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 			        'conditionalLogic' => GFFormsModel::sanitize_conditional_logic( $conditional_logic ),
 		        );
 
-		        unset( $meta['id'], $meta['optin_enabled'], $meta['optin_field_id'], $meta['optin_operator'], $meta['optin_value'], $meta['field_map'] );
-
-		        $old_feed["meta"] = $meta;
+		        unset( $meta['id'], $meta['optin_enabled'], $meta['optin_field_id'], $meta['optin_operator'], $meta['optin_value'], $meta['field_map'], $meta['contact_list_id'], $meta['contact_list_name'] );
 
 		        $feed_id = $this->insert_feed( $old_feed['form_id'], $old_feed['is_active'], $meta );
 
@@ -229,6 +239,8 @@ class GF_Constant_Contact extends GFFeedAddOn {
             add_option( 'gravityforms_cc_migrated', true );
         }
 
+		// Restore previous setting
+		$wpdb->suppress_errors = $suppress_errors_backup;
 	}
 
 	/**
