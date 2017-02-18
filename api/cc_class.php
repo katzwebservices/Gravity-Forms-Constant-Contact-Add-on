@@ -295,10 +295,13 @@
 	 /**
      * Retrieves all the details for a specific contact identified by $email.
      * @param string $email
-     * @return array with all information about the contact.
+     * @return false|array with all information about the contact, or false if contact doesn't exist
      */
 	 public	function getSubscriberDetails($email) {
 			$contact = $this->getSubscribers($email);
+			 if ( empty( $contact['items'] ) ) {
+				 return false;
+			 }
 			$fullContact = array();
 			$call = str_replace('http://', 'https://', $contact['items'][0]['id']);
 			// Convert id URI to BASIC compliant
