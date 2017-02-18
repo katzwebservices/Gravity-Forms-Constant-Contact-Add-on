@@ -839,6 +839,18 @@ class GF_Constant_Contact extends GFFeedAddOn {
 			$field_value = $this->get_field_value( $form, $entry, $field_id );
 
 			if ( ! rgblank( $field_value ) ) {
+
+				$field = GFFormsModel::get_field( $form, $field_id );
+
+				if( 'date_created' === $field_id || 'date' === $field->type ) {
+
+					/**
+                     * Support modifying the date format; backward compatible with 2.x
+					 * @param string $field_value Date string to be modified
+					 */
+					$field_value = apply_filters( 'gravityforms_constant_contact_change_date_format', $field_value );
+				}
+
 				$subscriber_details[ $field_name ] = $field_value;
 			}
 
