@@ -354,7 +354,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 					),
 					array(
 						'name'     => 'lists[]',
-						'label'    => __( 'Constant Contact List', 'gravity-forms-constant-contact' ),
+						'label'    => __( 'Constant Contact Lists', 'gravity-forms-constant-contact' ),
 						'type'     => 'select',
 						'class'    => 'chosen',
 						'after_select' => "<script>
@@ -367,7 +367,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 						'multiple' => true,
 						'required' => true,
 						'choices'  => $this->lists_for_feed_setting(),
-						'tooltip'  => '<h6>' . __( 'Constant Contact List', 'gravity-forms-constant-contact' ) . '</h6>' . __( 'Select which Constant Contact list this feed will add contacts to.', 'gravity-forms-constant-contact' ),
+						'tooltip'  => '<h6>' . __( 'Constant Contact Lists', 'gravity-forms-constant-contact' ) . '</h6>' . __( 'Select which Constant Contact list this feed will add contacts to.', 'gravity-forms-constant-contact' ),
 					),
 					array(
 						'name'      => 'fields',
@@ -530,7 +530,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 
 		return array(
 			'feed_name' => __( 'Name', 'gravity-forms-constant-contact' ),
-			'lists'      => __( 'Constant Contact List', 'gravity-forms-constant-contact' ),
+			'lists'      => __( 'Constant Contact Lists', 'gravity-forms-constant-contact' ),
 		);
 
 	}
