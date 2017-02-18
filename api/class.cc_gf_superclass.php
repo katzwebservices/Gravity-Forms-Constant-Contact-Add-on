@@ -79,34 +79,6 @@ class CC_GF_SuperClass extends CC_Utility {
 	}
 
 	/**
-	 * Convert CC endpoint id into a number id to be used on forms (avoid issues with more strict servers)
-	 *
-	 * @access public
-	 * @static
-	 * @param mixed $endpoint
-	 * @return false|int $id
-	 */
-	public function get_list_short_id( $endpoint ) {
-
-		if( empty( $endpoint ) ) {
-			return false;
-		}
-
-		// Already short
-		if ( is_numeric( $endpoint ) ) {
-			return (int) $endpoint;
-		}
-
-		// Return the last characters; they are the list ID
-		if( false !== ( $pos = strrpos( rtrim( $endpoint, '/' ), '/' ) ) ) {
-			return (int) trim( substr( $endpoint, $pos + 1 ) );
-		}
-
-		// Nothing was valid
-		return false;
-	}
-
-	/**
 	 * Check whether a subscriber exists at $email
 	 *
 	 * @param string $email

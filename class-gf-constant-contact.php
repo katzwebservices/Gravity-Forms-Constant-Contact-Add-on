@@ -66,6 +66,33 @@ class GF_Constant_Contact extends GFFeedAddOn {
 	public function upgrade( $previous_version = '' ) {
         // Get existing feeds
         // Migrate to new structure
+
+	/**
+	 * Convert CC endpoint id into a number id to be used on forms (avoid issues with more strict servers)
+	 *
+	 * @access public
+	 * @static
+	 * @param mixed $endpoint
+	 * @return false|int $id
+	 */
+	public function get_list_short_id( $endpoint ) {
+
+		if( empty( $endpoint ) ) {
+			return false;
+		}
+
+		// Already short
+		if ( is_numeric( $endpoint ) ) {
+			return (int) $endpoint;
+		}
+
+		// Return the last characters; they are the list ID
+		if( false !== ( $pos = strrpos( rtrim( $endpoint, '/' ), '/' ) ) ) {
+			return (int) trim( substr( $endpoint, $pos + 1 ) );
+		}
+
+		// Nothing was valid
+		return false;
 	}
 
 	/**
@@ -429,7 +456,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 		foreach ( $lists as $list ) {
 
 			foreach( $list_ids as $list_id ) {
-				if ( intval( $list_id ) === intval( $list['id'] ) || intval( $list_id ) === $this->api->get_list_short_id( $list['id'] ) ) {
+				if ( intval( $list_id ) === intval( $list['id'] ) || intval( $list_id ) === $this->get_list_short_id( $list['id'] ) ) {
 					$return[] = $list;
 				}
 			}
@@ -468,7 +495,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 
 				$choices[] = array(
 					'label' => esc_html( $list['title'] ),
-					'value' => $this->api->get_list_short_id( $list['id'] ),
+					'value' => $this->get_list_short_id( $list['id'] ),
 				);
 
 			}
