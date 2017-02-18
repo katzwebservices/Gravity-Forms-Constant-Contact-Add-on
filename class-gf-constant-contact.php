@@ -98,6 +98,36 @@ class GF_Constant_Contact extends GFFeedAddOn {
 	}
 
 	/**
+	 * @return string Feed list title, with HTML of Constant Contact logo
+	 */
+	public function feed_list_title() {
+		return $this->plugin_settings_icon() . parent::feed_list_title();
+	}
+
+	/**
+	 * @return string Feed settings title, with HTML of Constant Contact logo
+	 */
+	public function feed_settings_title() {
+	    return $this->plugin_settings_icon() . parent::feed_settings_title();
+    }
+
+	/**
+	 * @return string HTML of Constant Contact logo
+	 */
+	public function plugin_settings_icon() {
+
+	    ob_start();
+
+	    ?>
+        <div><a href='https://katz.si/6p' target='_blank' style="background: transparent url(<?php echo self::get_base_url() ?>/images/ctct_logo_600x90.png) left top no-repeat; background-size: contain; width:300px; height:45px; display:block; text-indent: -9999px; overflow:hidden; direction: ltr; margin: 0 0 1em;">Constant Contact</a></div>
+        <?php
+
+        $logo = ob_get_clean();
+
+        return $logo;
+    }
+
+	/**
 	 * Migrate the old feed structure to the new one
      *
      * @since 3.0
