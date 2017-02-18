@@ -4,18 +4,54 @@ GFForms::include_feed_addon_framework();
 
 class GF_Constant_Contact extends GFFeedAddOn {
 
+	/**
+	 * @var string Version number of the Add-On
+	 */
 	protected $_version = GF_CONSTANT_CONTACT_VERSION;
+
+	/**
+	 * @var string Gravity Forms minimum version requirement
+	 */
 	protected $_min_gravityforms_version = '1.9.14.26';
+
+	/**
+	 * @var string URL-friendly identifier used for form settings, add-on settings, text domain localization...
+	 */
 	protected $_slug = 'gravity-forms-constant-contact';
+
+	/**
+	 * @var string Relative path to the plugin from the plugins folder. Example "gravityforms/gravityforms.php"
+	 */
 	protected $_path = 'gravity-forms-constant-contact/constantcontact.php';
+
+	/**
+	 * @var string Full path the the plugin. Example: __FILE__
+	 */
 	protected $_full_path = __FILE__;
+
+	/**
+	 * @var string URL to the Gravity Forms website. Example: 'http://www.gravityforms.com' OR affiliate link.
+	 */
+	protected $_url = 'https://katz.si/gravityforms';
+
+	/**
+	 * @var string Title of the plugin to be used on the settings page, form settings and plugins page. Example: 'Gravity Forms MailChimp Add-On'
+	 */
 	protected $_title = 'Gravity Forms Constant Contact Add-On';
+
+	/**
+	 * @var string Short version of the plugin title to be used on menus and other places where a less verbose string is useful. Example: 'MailChimp'
+	 */
 	protected $_short_title = 'Constant Contact';
 
-	/** @var CC_GF_SuperClass */
+	/**
+     * @var CC_GF_SuperClass API wrapper for the Constant Contact API
+     */
 	protected $api = NULL;
 
-	/** @var GF_Constant_Contact */
+	/**
+     * @var GF_Constant_Contact The one true instance of this class
+     */
 	private static $_instance = NULL;
 
 	/* Permissions */
@@ -25,6 +61,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 
 	/* Members plugin integration */
 	protected $_capabilities = array( 'gravityforms_constant_contact', 'gravityforms_constant_contact_uninstall' );
+
 
 	/**
 	 * Get instance of this class.
@@ -61,97 +98,98 @@ class GF_Constant_Contact extends GFFeedAddOn {
 	}
 
 	/**
-	 * Override this function to add to add database update scripts or any other code to be executed when the Add-On version changes
+	 * Migrate the old feed structure to the new one
+     *
+     * @since 3.0
+     *
+     * @return void
 	 */
 	public function upgrade( $previous_version = '' ) {
 		global $wpdb;
 
-		if ( get_option( 'gravityforms_cc_migrated' ) ) {
+		// Already processed
+		if ( empty( get_option( 'gravityforms_cc_migrated' ) ) {
 			return;
 		}
 
 		$old_addon_table_name = $wpdb->prefix . "rg_constantcontact";
 
-// Get old feeds
-		{
-			$form_table_name = GFFormsModel::get_form_table_name();
+        // Get old feeds
+        $form_table_name = GFFormsModel::get_form_table_name();
 
-			$sql = "SELECT s.is_active, s.form_id, s.meta
-                FROM $old_addon_table_name s
-                INNER JOIN $form_table_name f ON s.form_id = f.id";
+        $sql = "SELECT s.is_active, s.form_id, s.meta
+            FROM $old_addon_table_name s
+            INNER JOIN $form_table_name f ON s.form_id = f.id";
 
-			$old_feeds = $wpdb->get_results( $sql, ARRAY_A );
+        $old_feeds = $wpdb->get_results( $sql, ARRAY_A );
 
-			if ( ! $old_feeds ) {
+        if( $old_feeds ) {
+	        foreach ( $old_feeds as $old_feed ) {
 
-				$this->log_debug( __METHOD__ . ': No feeds to migrate' );
+		        $meta = maybe_unserialize( $old_feed['meta'] );
 
-				return;
-			}
+		        // Single list => allow multiple lists
+		        $meta['lists'] = array(
+			        $this->get_list_short_id( rgar( $meta, 'contact_list_id' ) )
+		        );
+		        unset( $meta['contact_list_id'] );
 
-			foreach ( $old_feeds as $old_feed ) {
+		        $meta['feed_name'] = $this->get_default_feed_name();
+		        unset( $meta['contact_list_name'] );
 
-				$meta = maybe_unserialize( $old_feed['meta'] );
+		        // Update fields
+		        foreach ( (array) rgar( $meta, 'field_map' ) as $key => $field_id ) {
+			        $meta["fields_{$key}"] = $field_id;
+			        unset( $meta['field_map'][ $key ] );
+		        }
 
-				// Single list => allow multiple lists
-				$meta['lists'] = array(
-					$this->get_list_short_id( rgar( $meta, 'contact_list_id' ) )
-				);
-				unset( $meta['contact_list_id'] );
+		        // Opt-in enabled
+		        $meta['feed_condition_conditional_logic'] = (int) rgar( $meta, 'optin_enabled' );
 
-				$meta['feed_name'] = $this->get_default_feed_name();
-				unset( $meta['contact_list_name'] );
+		        $conditional_logic = array(
+			        'actionType' => 'show',
+			        'logicType'  => 'all',
+			        'rules'      => array(
+				        array(
+					        'fieldId'  => rgar( $meta, 'optin_field_id' ),
+					        'operator' => rgar( $meta, 'optin_operator' ),
+					        'value'    => rgar( $meta, 'optin_value' ),
+				        ),
+			        ),
+		        );
 
-				// Update fields
-				foreach ( (array) rgar( $meta, 'field_map' ) as $key => $field_id ) {
-					$meta["fields_{$key}"] = $field_id;
-					unset( $meta['field_map'][ $key ] );
-				}
+		        $meta['feed_condition_conditional_logic_object'] = array(
+			        'conditionalLogic' => GFFormsModel::sanitize_conditional_logic( $conditional_logic ),
+		        );
 
-				// Opt-in enabled
-				$meta['feed_condition_conditional_logic'] = (int) rgar( $meta, 'optin_enabled' );
+		        unset( $meta['id'], $meta['optin_enabled'], $meta['optin_field_id'], $meta['optin_operator'], $meta['optin_value'], $meta['field_map'] );
 
-				$conditional_logic = array(
-					'actionType' => 'show',
-					'logicType'  => 'all',
-					'rules'      => array(
-						array(
-							'fieldId'  => rgar( $meta, 'optin_field_id' ),
-							'operator' => rgar( $meta, 'optin_operator' ),
-							'value'    => rgar( $meta, 'optin_value' ),
-						),
-					),
-				);
+		        $old_feed["meta"] = $meta;
 
-				$meta['feed_condition_conditional_logic_object'] = array(
-					'conditionalLogic' => GFFormsModel::sanitize_conditional_logic( $conditional_logic ),
-				);
+		        $feed_id = $this->insert_feed( $old_feed['form_id'], $old_feed['is_active'], $meta );
 
-				unset( $meta['id'], $meta['optin_enabled'], $meta['optin_field_id'], $meta['optin_operator'], $meta['optin_value'], $meta['field_map'] );
+		        $this->log_debug( __METHOD__ . ': Migrated feed #' . $feed_id );
+	        }
+        } else {
 
-				$old_feed["meta"] = $meta;
+	         $this->log_debug( __METHOD__ . ': No old feeds to migrate' );
 
-				$feed_id = $this->insert_feed( $old_feed['form_id'], $old_feed['is_active'], $meta );
+        }
 
-				$this->log_debug( __METHOD__ . ': Migrated feed #' . $feed_id );
-			}
-		}
+        // Then delete the old feeds table
+        $dropped = $wpdb->query( "DROP TABLE IF EXISTS " . $old_addon_table_name );
 
-// Then delete the feeds
-		{
-			$dropped = $wpdb->query( "DROP TABLE IF EXISTS " . $old_addon_table_name );
+        if ( ! $dropped ) {
 
-			if ( ! $dropped ) {
+            $this->log_error( __METHOD__ . ': Was not able to drop old addon table from DB' );
 
-			    $this->log_error( __METHOD__ . ': Was not able to drop old addon table from DB' );
+        } else {
 
-			} else {
+            $this->log_debug( __METHOD__ . ': Successfully cleaned up old DB table' );
 
-			    $this->log_debug( __METHOD__ . ': Successfully cleaned up old DB table' );
+            add_option( 'gravityforms_cc_migrated', true );
+        }
 
-				add_option( 'gravityforms_cc_migrated', true );
-			}
-		}
 	}
 
 	/**
