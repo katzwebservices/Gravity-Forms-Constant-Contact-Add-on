@@ -674,7 +674,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 		$subscription_results = $this->subscribe_to_list( $add_list, $subscriber_details );
 
 		if( ! is_wp_error( $subscription_results ) && !empty( $subscription_results ) ) {
-			$this->add_note( $entry["id"], __('Successfully added/updated in Constant Contact.', 'gravity-forms-constant-contact'));
+			$this->add_note( $entry["id"], __('Successfully added/updated in Constant Contact.', 'gravity-forms-constant-contact' ), 'gravity-forms-constant-contact' );
 		} else {
 
 			$error = '';
@@ -683,10 +683,32 @@ class GF_Constant_Contact extends GFFeedAddOn {
 				$error = ': '.$subscription_results->get_error_message();
 			}
 
-			$this->add_note( $entry["id"], __('Errors when adding/updating in Constant Contact', 'gravity-forms-constant-contact') . $error );
+			$this->add_note( $entry["id"], __('Errors when adding/updating in Constant Contact', 'gravity-forms-constant-contact') . $error, 'gravity-forms-constant-contact' );
 		}
 
 		return $subscription_results;
+	}
+
+	/**
+     * Only add note if filter passes
+     *
+	 * @param int $entry_id
+	 * @param string $note
+	 * @param null $note_type
+	 */
+	public function add_note( $entry_id, $note, $note_type = NULL ) {
+
+		/**
+         * @since 3.0 Added $entry_id and $note params
+		 * @param bool $add_notes Whether to add notes after error/success of adding subscriber
+         * @param int $entry_id GF Entry ID
+         * @param string $note Note to be added
+		 */
+		$add_notes = apply_filters( 'gravityforms_constant_contact_add_notes_to_entries', true, $entry_id, $note );
+
+		if ( $add_notes ) {
+		    parent::add_note( $entry_id, $note, $note_type );
+		}
 	}
 
 	public function subscribe_to_list( $list_ids = array(), $passed_subscriber_details = array() ) {
