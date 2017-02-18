@@ -609,23 +609,15 @@ class GF_Constant_Contact extends GFFeedAddOn {
 			return false;
 		}
 
-		$lists = get_transient( 'gf_ctct_lists_' . $this->api->login );
+		$this->log_error( __METHOD__ .': Fetching lists' );
 
-		if ( ! $lists ) {
-			$this->log_error( __METHOD__ .': Fetching lists' );
+		$lists = $this->api->lists();
 
-			$lists = $this->api->CC_List()->getLists();
+        if ( ! $lists ) {
+            $this->log_error( __METHOD__ . ': Lists not loaded' );
 
-			if ( ! $lists ) {
-
-				$this->log_error( __METHOD__ . ': Lists not loaded' );
-
-				return false;
-
-			} else {
-				set_transient( 'gf_ctct_lists_' . $this->api->login, $lists, HOUR_IN_SECONDS );
-			}
-		}
+            return false;
+        }
 
 		$return = array();
 

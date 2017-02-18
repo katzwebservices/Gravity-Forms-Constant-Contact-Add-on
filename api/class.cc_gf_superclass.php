@@ -72,11 +72,24 @@ class CC_GF_SuperClass extends CC_Utility {
 		parent::__construct();
 	}
 
+	/**
+	 * @return array|false
+	 */
 	public function lists() {
+
+		$dont_cache = isset( $_GET['cache'] ) && GFCommon::current_user_can_any( 'manage_options' );
+
+		if( ! $dont_cache && $lists = get_transient( 'gf_ctct_lists_' . $this->login ) ) {
+			return $lists;
+		}
+
+		unset( $_GET['cache'] );
 
 		$lists = $this->CC_List()->getLists();
 
-		set_transient( 'gf_ctct_lists_' . $this->login, $lists, HOUR_IN_SECONDS );
+		if ( $lists ) {
+			set_transient( 'gf_ctct_lists_' . $this->login, $lists, HOUR_IN_SECONDS );
+		}
 
 		return $lists;
 	}
@@ -142,8 +155,6 @@ class CC_GF_SuperClass extends CC_Utility {
 		$warnings = ob_get_clean();
 
 		update_option('gravity_forms_cc_valid_api', !empty($lists));
-
-		delete_transient( 'gf_ctct_lists_' . $this->login );
 
 		return empty($lists) ? false : true;
 	}
