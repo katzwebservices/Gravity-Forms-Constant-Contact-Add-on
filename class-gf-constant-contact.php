@@ -64,8 +64,95 @@ class GF_Constant_Contact extends GFFeedAddOn {
 	 * Override this function to add to add database update scripts or any other code to be executed when the Add-On version changes
 	 */
 	public function upgrade( $previous_version = '' ) {
-        // Get existing feeds
-        // Migrate to new structure
+		global $wpdb;
+
+		if ( get_option( 'gravityforms_cc_migrated' ) ) {
+			return;
+		}
+
+		$old_addon_table_name = $wpdb->prefix . "rg_constantcontact";
+
+// Get old feeds
+		{
+			$form_table_name = GFFormsModel::get_form_table_name();
+
+			$sql = "SELECT s.is_active, s.form_id, s.meta
+                FROM $old_addon_table_name s
+                INNER JOIN $form_table_name f ON s.form_id = f.id";
+
+			$old_feeds = $wpdb->get_results( $sql, ARRAY_A );
+
+			if ( ! $old_feeds ) {
+
+				$this->log_debug( __METHOD__ . ': No feeds to migrate' );
+
+				return;
+			}
+
+			foreach ( $old_feeds as $old_feed ) {
+
+				$meta = maybe_unserialize( $old_feed['meta'] );
+
+				// Single list => allow multiple lists
+				$meta['lists'] = array(
+					$this->get_list_short_id( rgar( $meta, 'contact_list_id' ) )
+				);
+				unset( $meta['contact_list_id'] );
+
+				$meta['feed_name'] = $this->get_default_feed_name();
+				unset( $meta['contact_list_name'] );
+
+				// Update fields
+				foreach ( (array) rgar( $meta, 'field_map' ) as $key => $field_id ) {
+					$meta["fields_{$key}"] = $field_id;
+					unset( $meta['field_map'][ $key ] );
+				}
+
+				// Opt-in enabled
+				$meta['feed_condition_conditional_logic'] = (int) rgar( $meta, 'optin_enabled' );
+
+				$conditional_logic = array(
+					'actionType' => 'show',
+					'logicType'  => 'all',
+					'rules'      => array(
+						array(
+							'fieldId'  => rgar( $meta, 'optin_field_id' ),
+							'operator' => rgar( $meta, 'optin_operator' ),
+							'value'    => rgar( $meta, 'optin_value' ),
+						),
+					),
+				);
+
+				$meta['feed_condition_conditional_logic_object'] = array(
+					'conditionalLogic' => GFFormsModel::sanitize_conditional_logic( $conditional_logic ),
+				);
+
+				unset( $meta['id'], $meta['optin_enabled'], $meta['optin_field_id'], $meta['optin_operator'], $meta['optin_value'], $meta['field_map'] );
+
+				$old_feed["meta"] = $meta;
+
+				$feed_id = $this->insert_feed( $old_feed['form_id'], $old_feed['is_active'], $meta );
+
+				$this->log_debug( __METHOD__ . ': Migrated feed #' . $feed_id );
+			}
+		}
+
+// Then delete the feeds
+		{
+			$dropped = $wpdb->query( "DROP TABLE IF EXISTS " . $old_addon_table_name );
+
+			if ( ! $dropped ) {
+
+			    $this->log_error( __METHOD__ . ': Was not able to drop old addon table from DB' );
+
+			} else {
+
+			    $this->log_debug( __METHOD__ . ': Successfully cleaned up old DB table' );
+
+				add_option( 'gravityforms_cc_migrated', true );
+			}
+		}
+	}
 
 	/**
 	 * Convert CC endpoint id into a number id to be used on forms (avoid issues with more strict servers)
