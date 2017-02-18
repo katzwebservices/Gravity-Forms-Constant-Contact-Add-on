@@ -143,8 +143,17 @@ class GF_Constant_Contact extends GFFeedAddOn {
 		}
 
 		$old_addon_table_name = $wpdb->prefix . "rg_constantcontact";
+		//
+		// First, encrypt the login and password
+        //
+		$settings = get_option( 'gf_constantcontact_settings' );
 
-        // Get old feeds
+		if ( ! empty( $settings ) && empty( $settings['encrypted'] ) && method_exists( 'GFCommon', 'encrypt') ) {
+
+		    $settings = array_map( array( 'GFCommon', 'encrypt' ), $settings );
+
+			update_option( 'gf_constantcontact_settings', $settings );
+		}
         $form_table_name = GFFormsModel::get_form_table_name();
 
         $sql = "SELECT s.is_active, s.form_id, s.meta
