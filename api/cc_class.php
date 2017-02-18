@@ -87,7 +87,7 @@
         * @param string $request_url - is the URL where the request will be made
         * @param string $parameter - if it is not empty then this parameter will be sent using POST method
         * @param string $type - GET/POST/PUT/DELETE
-        * @return a string containing server output/response
+        * @return string server output/response
         */
         protected function doServerCall($request_url, $parameter = '', $type = "GET") {
 
@@ -227,10 +227,10 @@
     /**
      * Method that checks if a subscriber already exist
      * @param string $email
-     * @return subscriber`s id if it exists or false if it doesn't
+     * @return string|int subscriber`s id if it exists or false if it doesn't
      */
 	 public	function subscriberExists($email = '') {
-		 $call = $this->apiPath.'/contacts?email='.$email;
+		 $call = $this->apiPath.'/contacts?email='.rawurlencode( $email );
 		 $return = $this->doServerCall($call);
 		 $xml = simplexml_load_string($return);
 		 $id = $xml->entry->id;
@@ -242,14 +242,14 @@
      * Method that retrieves from Constant Contact a collection with all the Subscribers
      * If email parameter is mentioned then only mentioned contact is retrieved.
      * @param string $email
-     * @return Bi-Dimenstional array with information about contacts.
+     * @return array Bi-Dimenstional array with information about contacts.
      */
 	 public	function getSubscribers($email = '', $page = '') {
 			$contacts = array();
 			$contacts['items'] = array();
 
 			if (! empty($email)) {
-				$call = $this->apiPath.'/contacts?email='.$email;
+				$call = $this->apiPath.'/contacts?email='.rawurlencode( $email );
 			} else {
 				if (! empty($page)) {
 					$call = $this->apiPath.$page;
@@ -295,10 +295,13 @@
 	 /**
      * Retrieves all the details for a specific contact identified by $email.
      * @param string $email
-     * @return array with all information about the contact.
+     * @return false|array with all information about the contact, or false if contact doesn't exist
      */
 	 public	function getSubscriberDetails($email) {
 			$contact = $this->getSubscribers($email);
+			 if ( empty( $contact['items'] ) ) {
+				 return false;
+			 }
 			$fullContact = array();
 			$call = str_replace('http://', 'https://', $contact['items'][0]['id']);
 			// Convert id URI to BASIC compliant
