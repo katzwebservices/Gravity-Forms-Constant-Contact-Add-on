@@ -1040,7 +1040,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 			/* Log that test failed. */
 			$this->log_error( __METHOD__ . '(): API credentials are invalid.' );
 
-			set_transient( 'gravity_forms_cc_valid_api', '0' );
+			set_transient( 'gravity_forms_cc_valid_api', '0', DAY_IN_SECONDS );
 
 			return false;
 		}
@@ -1051,7 +1051,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 		/* Assign Constant Contact object to the class. */
 		$this->api = $api;
 
-		set_transient( 'gravity_forms_cc_valid_api', '1' );
+		set_transient( 'gravity_forms_cc_valid_api', '1', DAY_IN_SECONDS );
 
 		return true;
 
