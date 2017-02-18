@@ -935,7 +935,10 @@ class GF_Constant_Contact extends GFFeedAddOn {
 	    // Get the settings directly if submitted. They haven't been encrypted yet.
 	    if( $this->is_save_postback() && $this->is_plugin_settings() ) {
 
-	       $settings = $this->get_posted_settings();
+	        // The API may no longer be valid; force re-checking
+	        delete_transient( 'gravity_forms_cc_valid_api' );
+
+            $settings = $this->get_posted_settings();
 
 	    } else {
 
