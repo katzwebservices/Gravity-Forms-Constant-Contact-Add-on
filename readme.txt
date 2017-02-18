@@ -60,63 +60,18 @@ add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false
 
 1. Users can choose which Constant Contact lists they are added to.
 
-== Upgrade Notice ==
-
-= 2.2.2 (August 11, 2015) =
-* Fixed: Invalid login issue (thanks [@robertark](https://github.com/robertark)!)
-* Confirmed plugin compatibility with WordPress 4.3
-
-= 2.2 & 2.2.1 (January 5, 2015) = 
-* Fixed: Fatal error on activation for plugins located outside of `/plugins/` directory
-* Modified: Converted API to use WordPress remote request functionality - now works with or without `curl` enabled.
-* Fixed: PHP notices
-* Tweak: Replace some images with Dashicons
-* Tweak: Update Constant Contact logo for Retina displays
-* Removed PressTrends reporting
-* Added: Intro to GravityView plugin
-* Tweak: Only fetch the API if a feed is going to be exported to CTCT
-
-
-= 2.1.2 (February 5, 2014) =
-* Fixed: Some servers are very sensitive to the fact of posting a form where some values are urls (in this case, the Constant Contact list endpoint). This version replaces that way of posting and adds three new methods to convert endpoint's in short id's and backwards.
-* Fixed: Minor corrections (html, PHP warnings)
-
-= 2.1.1 =
-* Added: `gravityforms_constant_contact_change_date_format` filter to enable changing the format of the date field export to Constant Contact.
-
-= 2.1 =
-* Fixed: Many PHP notices. This should fix the "spinning" issue when creating a feed with `WP_DEBUG` turned on.
-* Added: Now a note is added to each entry to confirm that the entry was added/updated in Constant Contact.
-* Improved: PHP 5.4 support
-* Improved: Look of the settings page, new CC logo
-
-= 2.0.3 =
-* Made it clearer that you need to configure the settings before creating a feed.
-* Plugin now only checks username & password when saved; this prevents accounts being frozen
-* Corrected "Opt-in Source" to be `ACTION_BY_CONTACT`, which is correct. It used to be `ACTION_BY_CUSTOMER`.
-* Added notice when Gravity Forms isn't installed or active
-* Attempted to fix bug where user names with spaces don't connect to the API properly
-* Turned off curl debug for echoing errors on submitted forms. Add `?debug=true` to the page URL to turn back on.
-
-= 2.0.2 =
-* Fixed bug where Custom Fields don't get sent to Constant Contact.
-* Added notice on Custom Fields feed setup to let user know that custom fields are limited to 50 characters.
-
-= 2.0.1 =
-* Fixed issue where registration notice shows up on Plugins page, even when Gravity Forms is registered.
-
-= 2.0 =
-* Converted to Gravity Forms Add-On Feeds system. If upgrading, <strong>you will need to re-configure your connected forms!</strong>
-* Removed dependence on the <a href="http://wordpress.org/extend/plugins/constant-contact-api/">Constant Contact for WordPress</a> plugin
-
-= 1.1 =
-* Added list selection capability - allow users to choose which lists they are subscribed to (view the plugin's Installation tab or the Help tab on the Edit Form page to learn more)
-* Improved notices if Gravity Forms or Constant Contact API is not installed or activated
-
-= 1.0 =
-* No upgrade notice, since this is the first version!
-
 == Changelog ==
+
+= 3.0 =
+* Completely rewritten to use the Gravity Forms Feed Addon 2.0. If you are upgrading, <strong>check your feed configuration!</strong>
+* Now requires Gravity Forms 1.9.14+
+* Confirmed compatibility with WordPress 4.7.2
+
+New Features:
+
+* Add subscriber to multiple lists at once
+* Use complex Opt-In Conditions (before, plugin only supported one condition)
+* Encrypted Constant Contact login details
 
 = 2.2.2 (August 11, 2015) =
 * Fixed: Invalid login issue (thanks [@robertark](https://github.com/robertark)!)

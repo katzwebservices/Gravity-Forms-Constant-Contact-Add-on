@@ -51,6 +51,9 @@ class CC_GF_SuperClass extends CC_Utility {
 		$this->password = $password;
 		$this->loader = $loader;
 
+		/**
+		 * @param string $actionBy Who is creating the entries? If the business and not the customer, "ACTION_BY_CONTACT". Otherwise, "ACTION_BY_CUSTOMER".
+		 */
 		$actionBy = apply_filters('gravity_forms_constant_contact_action_by', 'ACTION_BY_CONTACT');
 
 		if($actionBy === 'ACTION_BY_CONTACT' || $actionBy === 'ACTION_BY_CUSTOMER') {
