@@ -1,7 +1,7 @@
 === Gravity Forms Constant Contact ===
-Tags: gravity forms, forms, gravity, form, crm, gravity form, mail, email, newsletter, Constant Contact, plugin, sidebar, widget, mailing list, API, email marketing, newsletters
-Requires at least: 3.3
-Tested up to: 4.3
+Tags: gravity forms, gravity, forms, constant contact, constantcontact, newsletter, mailing list
+Requires at least: 4.0
+Tested up to: 4.7.2
 Stable tag: trunk
 Contributors: katzwebdesign, katzwebservices
 Donate link: https://gravityview.co/?utm_source=plugin&utm_medium=readme&utm_content=donatelink&utm_campaign=gravity-forms-constant-contact
@@ -50,6 +50,10 @@ add_filter('gravity_forms_constant_contact_action_by', 'return_action_by_custome
 function return_action_by_customer() { return 'ACTION_BY_CUSTOMER'; }
 `
 
+= How do I prevent access to the Settings page? =
+
+To see the Settings page (that has the Constant Contact username and password on it), an user must have the `gravityforms_constantcontact` capability. To enable or disable access to users, install the [Members plugin](https://wordpress.org/plugins/members/) and add or remove the capability from the user.
+
 = How do I prevent the Entry notes confirming that the entry was added to Constant Contact? =
 
 To disable this feature, add this code to your theme's `functions.php` file:
@@ -58,23 +62,28 @@ To disable this feature, add this code to your theme's `functions.php` file:
 add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false');
 `
 
-
 == Screenshots ==
 
-1. Users can choose which Constant Contact lists they are added to.
+1. Plugin settings screen
+2. Choose the lists form submissions are added to, and map the data (including Custom Fields!)
+3. Add advanced logic to determine when a submission should (or should not) be added
+4. Configure one or more feeds (Constant Contact sync rules) per form
 
 == Changelog ==
 
-= 3.0 =
+= 3.0 on February 19, 2017 =
 * Completely rewritten to use the Gravity Forms Feed Addon 2.0. If you are upgrading, <strong>check your feed configuration!</strong>
 * Now requires Gravity Forms 1.9.14+
-* Confirmed compatibility with WordPress 4.7.2
 
-New Features:
+__New Features:__
 
 * Add subscriber to multiple lists at once
 * Use complex Opt-In Conditions (before, plugin only supported one condition)
-* Encrypted Constant Contact login details
+* Encrypt Constant Contact login settings
+* Improved restriction of settings page
+* Fixed bug that prevented emails with plus signs (+) from being processed properly
+* Added improved logging
+* Confirmed compatibility with WordPress 4.7.2
 
 = 2.2.2 (August 11, 2015) =
 * Fixed: Invalid login issue (thanks [@robertark](https://github.com/robertark)!)
