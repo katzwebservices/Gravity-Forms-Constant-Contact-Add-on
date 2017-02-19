@@ -64,14 +64,11 @@
 
 <div id="kws_gravityview_info">
 	<div class="aligncenter">
-		<a href="https://gravityview.co/pricing/?utm_source=plugin&amp;utm_medium=settings&amp;utm_content=logolink&amp;utm_campaign=gravity-forms-constant-contact" title="<?php esc_attr_e( 'Go to the GravityView Website', 'gravity-forms-constant-contact' ); ?>" class="aligncenter"><img src= "<?php echo plugins_url( '/images/GravityView-612x187.jpg', GFConstantContact::get_file() ); ?>" alt="GravityView Logo" width="306" height="93" /></a>
+		<a href="https://gravityview.co/pricing/?utm_source=plugin&amp;utm_medium=settings&amp;utm_content=logolink&amp;utm_campaign=gravity-forms-constant-contact" title="<?php esc_attr_e( 'Go to the GravityView Website', 'gravity-forms-constant-contact' ); ?>" class="aligncenter"><img src= "<?php echo GF_Constant_Contact::get_instance()->get_base_url() . '/images/GravityView-612x187.jpg'; ?>" alt="GravityView Logo" width="306" height="93" /></a>
 		<h2><?php esc_html_e('GravityView is the best way to display Gravity Forms entries.', 'gravity-forms-constant-contact'); ?></h2>
 
 		<?php
-
-
-		echo '<h3>'. sprintf( esc_html__('Do you have form data you want to show on your website? Have you ever copied and pasted entries into your site? That&rsquo;s illogical! %sGravityView%s is here.', 'gravity-forms-constant-contact' ), '<a href="https://gravityview.co/pricing/?utm_source=plugin&amp;utm_medium=settings&amp;utm_content=subheadinglink&amp;utm_campaign=gravity-forms-constant-contact">', '</a>' ) .'</h3>';
-
+		    echo '<h3>'. sprintf( esc_html__('Do you have form data you want to show on your website? Have you ever copied and pasted entries into your site? That&rsquo;s illogical! %sGravityView%s is here.', 'gravity-forms-constant-contact' ), '<a href="https://gravityview.co/pricing/?utm_source=plugin&amp;utm_medium=settings&amp;utm_content=subheadinglink&amp;utm_campaign=gravity-forms-constant-contact">', '</a>' ) .'</h3>';
 		?>
 
 		<ul class="ul-square">
@@ -82,6 +79,10 @@
 			<li><a href="https://gravityview.co/extensions/?utm_source=plugin&amp;utm_medium=settings&amp;utm_content=extensionslink&amp;utm_campaign=gravity-forms-constant-contact"><?php esc_html_e('Lots of powerful extensions', 'gravity-forms-constant-contact'); ?></a></li>
 			<li><?php esc_html_e('30 day money-back Guarantee', 'gravity-forms-constant-contact' ); ?></li>
 		</ul>
+
+        <?php
+            echo '<h3 style="margin-top: 1.5em; text-align:center">' . esc_html__( 'Gravity Forms collects data. GravityView displays that data.') . '</h3>';
+        ?>
 
 		<p class="submit"><a href="https://gravityview.co/pricing/?utm_source=plugin&amp;utm_medium=settings&amp;utm_content=buttonlink&amp;utm_campaign=gravity-forms-constant-contact" class="button button-hero button-primary"><?php esc_html_e('Try GravityView Today!', 'gravity-forms-constant-contact'); ?></a></p>
 
