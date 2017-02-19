@@ -323,11 +323,11 @@ class GF_Constant_Contact extends GFFeedAddOn {
 
 		ob_start();
 		?>
-        <h2><?php _e( "Constant Contact Account Information", "gravity-forms-constant-contact" ) ?></h2>
-        <h3><?php printf( __( "If you don't have a Constant Contact account, you can %ssign up for one here%s.", 'gravity-forms-constant-contact' ), "<a href='http://katz.si/6p' target='_blank'>", "</a>" ); ?></h3>
+        <h2><?php printf( __( "If you don't have a Constant Contact account, you can %ssign up for one here%s.", 'gravity-forms-constant-contact' ), "<a href='https://katz.si/6p' target='_blank'>", "</a>" ); ?></h2>
         <p style="text-align: left; font-size:1.2em; line-height:1.4">
 			<?php _e( "Constant Contact makes it easy to send email newsletters to your customers, manage your subscriber lists, and track campaign performance. Use Gravity Forms to collect customer information and automatically add them to your Constant Contact subscriber list.", "gravity-forms-constant-contact" ); ?>
         </p>
+        <h4 class="gaddon-section-title gf_settings_subgroup_title"><?php esc_html_e( "Constant Contact Account Information", "gravity-forms-constant-contact" ); ?></h4>
 		<?php
 		return ob_get_clean();
 	}
