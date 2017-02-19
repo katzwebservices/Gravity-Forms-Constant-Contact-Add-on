@@ -297,6 +297,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 						'name'              => 'password',
 						'label'             => __( 'Constant Contact Password', 'gravity-forms-constant-contact' ),
 						'type'              => 'text',
+						'input_type'        => 'password',
 						'class'             => 'medium',
 						'error_message'     => __('The username and password combo provided is not valid', 'gravity-forms-constant-contact' ),
 						'validation_callback' => array( $this, 'validate_api_settings' ),
