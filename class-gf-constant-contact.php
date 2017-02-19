@@ -291,6 +291,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 						'class'             => 'medium',
 						'error_message'     => __('The username and password combo provided is not valid', 'gravity-forms-constant-contact' ),
 						'validation_callback' => array( $this, 'validate_api_settings' ),
+                        'feedback_callback' => array( $this, 'feedback_api_settings' ),
 					),
 					array(
 						'name'              => 'password',
@@ -299,6 +300,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 						'class'             => 'medium',
 						'error_message'     => __('The username and password combo provided is not valid', 'gravity-forms-constant-contact' ),
 						'validation_callback' => array( $this, 'validate_api_settings' ),
+						'feedback_callback' => array( $this, 'feedback_api_settings' ),
 					),
 					array(
 						'type'     => 'save',
@@ -1004,6 +1006,26 @@ class GF_Constant_Contact extends GFFeedAddOn {
 		update_option( 'gf_constantcontact_settings', $settings );
 	}
 
+	/**
+     * Show field feedback (on load, not only on save)
+     *
+	 * @param $field_value
+	 * @param array $field_settings
+	 *
+	 * @return bool
+	 */
+	public function feedback_api_settings( $field_value, $field_settings = array() ) {
+		return $this->validate_api_settings( $field_settings, $field_value );
+    }
+
+	/**
+     * Validate saved settings
+     *
+	 * @param array $field_settings
+	 * @param string $field_value
+	 *
+	 * @return bool
+	 */
 	public function validate_api_settings( $field_settings = array(), $field_value = '' ) {
 
 	    if( ! $this->initialize_api() ) {
