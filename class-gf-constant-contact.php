@@ -915,6 +915,29 @@ class GF_Constant_Contact extends GFFeedAddOn {
     }
 
 	/**
+	 * Add GravityView promotional message on Settings page
+     *
+     * @return void
+	 */
+    public function render_uninstall() {
+
+	    /**
+	     * To hide the add, you can add a filter:
+	     *
+	     * `add_filter('hide_gravityview_promotion-gravity-forms-constant-contact', '__return_true');`
+	     *
+	     * @param boolean
+	     */
+	    $hide_promo = apply_filters( 'hide_gravityview_promotion-gravity-forms-constant-contact', class_exists('GravityView_Plugin') );
+
+	    if( empty( $hide_promo ) ) {
+		    include_once $this->get_base_path() . '/gravityview-info.php';
+	    }
+
+	    parent::render_uninstall();
+    }
+
+	/**
 	 * Delete settings on uninstall
      *
      * @since 3.0

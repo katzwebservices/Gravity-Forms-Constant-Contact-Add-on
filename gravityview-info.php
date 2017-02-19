@@ -1,18 +1,3 @@
-<?php
-
-/**
- * To hide the add, you can add a filter:
- *
- * `add_filter('hide_gravityview_promotion-gravity-forms-constant-contact', '__return_true');`
- *
- * @var boolean
- */
-$hide_promo = apply_filters( 'hide_gravityview_promotion-gravity-forms-constant-contact', class_exists('GravityView_Plugin') );
-
-if( $hide_promo ) { return; }
-
-?>
-
 <div class="hr-divider"></div>
 
 <style type="text/css">
