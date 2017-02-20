@@ -757,6 +757,14 @@ class GF_Constant_Contact extends GFFeedAddOn {
 		}
 	}
 
+	/**
+     * Subscribe a contact to lists
+     *
+	 * @param array $list_ids Array of
+	 * @param array $passed_subscriber_details
+	 *
+	 * @return true|WP_Error
+	 */
 	public function subscribe_to_list( $list_ids = array(), $passed_subscriber_details = array() ) {
 
 		if( ! $this->initialize_api() ) {
@@ -804,8 +812,8 @@ class GF_Constant_Contact extends GFFeedAddOn {
 			$this->log_debug( __METHOD__ . ': Final customer parameters used to update contact' . print_r( $subscriber_details, true ) );
 
 			$contactXML = $this->api->CC_Contact()->createContactXML( NULL, $subscriber_details );
-			$contactXML = (string) $contactXML;
-			$return     = $this->api->CC_Contact()->addSubscriber( $contactXML );
+
+			$return     = $this->api->CC_Contact()->addSubscriber( "{$contactXML}" );
 		}
 
 		return $return;
