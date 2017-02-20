@@ -828,7 +828,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 		foreach ( (array) $lists as $key => $list ) {
 
 			if ( is_numeric( $list ) ) {
-				$final_lists[ $key ] = sprintf( $this->api->apiPath . '%s/lists/%d', $this->login, $list );
+				$final_lists[ $key ] = sprintf( trailingslashit( $this->api->apiPath ) . 'lists/%d', $list );
 			} else {
 				$final_lists[ $key ] = set_url_scheme( $list, 'https' );
 			}
