@@ -759,6 +759,13 @@ class GF_Constant_Contact extends GFFeedAddOn {
 
 	public function subscribe_to_list( $list_ids = array(), $passed_subscriber_details = array() ) {
 
+		if( ! $this->initialize_api() ) {
+
+		    $this->log_debug( __METHOD__ . ': API not initialized.' );
+
+		    return new WP_Error( 'cc_api', 'Constant Contact API was not initialized properly.' );
+		}
+
 	    $subscriber_details = $passed_subscriber_details;
 
 		foreach ( $subscriber_details as $key => $detail ) {
