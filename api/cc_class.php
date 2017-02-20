@@ -432,7 +432,7 @@
      * Method that compose the needed XML format for a contact
      * @param string $id
      * @param array $params
-     * @return Formed XML
+     * @return string Formed XML
      */
 	 public	function createContactXML($id, $params = array()) {
 			if ( empty($id)) {

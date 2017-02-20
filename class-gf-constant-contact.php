@@ -501,7 +501,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 				'field_type' => array( 'address', 'text' ),
 			),
 			array(
-				'name'     => 'state',
+				'name'     => 'state_name',
 				'label'    => __( 'State', 'gravity-forms-constant-contact' ),
 				'required' => false,
 				'field_type' => array( 'address', 'text' ),
@@ -816,6 +816,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 	 * @return array Array of URLs to the lists
 	 */
 	public function fix_lists( $lists = array() ) {
+
 		$final_lists = array();
 
 		// Make sure each list is HTTPS
@@ -858,7 +859,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 
 				$field = GFFormsModel::get_field( $form, $field_id );
 
-				if( 'date_created' === $field_id || 'date' === $field->type ) {
+				if( 'date_created' === $field_id || ( $field && 'date' === $field->type ) ) {
 
 					/**
                      * Support modifying the date format; backward compatible with 2.x
@@ -867,9 +868,50 @@ class GF_Constant_Contact extends GFFeedAddOn {
 					$field_value = apply_filters( 'gravityforms_constant_contact_change_date_format', $field_value );
 				}
 
+				/**
+                 * If this is an address field and it's the State input, convert to US code. If there's no state code match, the original value is returned.
+                 * @see https://github.com/katzwebservices/Gravity-Forms-Constant-Contact-Add-on/issues/6
+                 * @var GF_Field_Address $field
+                 */
+				if( $field && 'address' === $field->type ) {
+
+					$field_value = trim( $field_value );
+
+					if( $field_id === $field->id . '.4' && 'us' === $field->addressType ) {
+
+						$maybe_state_code = $field->get_us_state_code( $field_value );
+
+						// Use state code, if exists. Otherwise, use default `state_name` and existing value
+						if( GFCommon::safe_strtoupper( $field_value ) !== $maybe_state_code ) {
+							$field_name = 'state_code';
+							$field_value = $maybe_state_code;
+						}
+
+                    } elseif( $field_id === $field->id . '.6' ) {
+
+					    // Convert country name to country code
+						$maybe_country_code = GFCommon::get_country_code( $field_value );
+
+						// If country not matched, then it's not in the GF country list
+						if ( ! empty( $maybe_country_code ) ) {
+							$field_name = 'country_code';
+							$field_value = function_exists( 'mb_strtolower' ) ? mb_strtolower( $maybe_country_code ) : strtolower( $maybe_country_code );
+						} else {
+                            $field_name = 'country_name';
+                        }
+
+                    }
+                }
+
+
 				$subscriber_details[ $field_name ] = $field_value;
 			}
 
+		}
+
+		// Having both the country code and name can cause problems; only push the code, if set
+		if ( ! empty( $subscriber_details['country_name'] ) && ! empty( $subscriber_details['country_code'] ) ) {
+			unset( $subscriber_details['country_name'] );
 		}
 
 		/* If email address is empty, return. */
