@@ -82,8 +82,9 @@ __New Features:__
 * Encrypt Constant Contact login settings
 * Improved restriction of settings page
 * Fixed bug that prevented emails with plus signs (+) from being processed properly
-* Added improved logging
 * Confirmed compatibility with WordPress 4.7.2
+* Added improved logging
+* Added translation strings
 
 = 2.2.2 (August 11, 2015) =
 * Fixed: Invalid login issue (thanks [@robertark](https://github.com/robertark)!)
