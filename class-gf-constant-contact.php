@@ -777,7 +777,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 			}
 		}
 
-		$subscriber_details["lists"] = (array) $list_ids;
+		$subscriber_details['lists'] = (array) $this->fix_lists( $list_ids );
 
 		// Check if email already exists; update if it does
 		if ( $existing_id = $this->api->subscriber_exists( $subscriber_details['email_address'] ) ) {
@@ -790,7 +790,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 			// Merge the lists together
 			$subscriber_details['lists'] = array_merge( $subscriber_details['lists'], $contactInfo['lists'] );
 
-			$subscriber_details['lists'] = $this->fix_lists( $subscriber_details['lists'] );
+			$subscriber_details['lists'] = array_unique( $subscriber_details['lists'] );
 
 			$this->log_debug( __METHOD__ . ': Final customer parameters used to update contact' . print_r( $subscriber_details, true ) );
 
@@ -800,8 +800,6 @@ class GF_Constant_Contact extends GFFeedAddOn {
 		} else {
 
 			$this->log_debug( __METHOD__ . ': Subscriber does not exist in Constant Contact' );
-
-			$subscriber_details['lists'] = $this->fix_lists( $subscriber_details['lists'] );
 
 			$this->log_debug( __METHOD__ . ': Final customer parameters used to update contact' . print_r( $subscriber_details, true ) );
 
