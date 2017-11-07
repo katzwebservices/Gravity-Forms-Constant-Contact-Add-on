@@ -73,23 +73,33 @@ class CC_GF_SuperClass extends CC_Utility {
 	}
 
 	/**
+	 * If the user has just created a new feed in Constant Contact, it won't show up in the plugin 
+	 * until one hour has past because of the caching in this function. There's no way in the plugin 
+	 * to actually disable or refresh the cache. 
+	 * 
+	 * Caching doesn't make much sense here, becuase this function is only called when the user
+	 * is first setting up the Constant Contact Feed, and never again. 
+	 * 	 
+	 * Therefore I propose it be disabled it entirely, so that it's always up-to-date with
+	 * what is in Constant Contact. https://github.com/skladany
+	 * 
 	 * @return array|false
 	 */
 	public function lists() {
 
-		$dont_cache = isset( $_GET['cache'] ) && GFCommon::current_user_can_any( 'manage_options' );
+		// $dont_cache = isset( $_GET['cache'] ) && GFCommon::current_user_can_any( 'manage_options' );
 
-		if( ! $dont_cache && $lists = get_transient( 'gf_ctct_lists_' . $this->login ) ) {
-			return $lists;
-		}
+		// if( ! $dont_cache && $lists = get_transient( 'gf_ctct_lists_' . $this->login ) ) {
+		// 	return $lists;
+		// }
 
-		unset( $_GET['cache'] );
+		// unset( $_GET['cache'] );
 
 		$lists = $this->CC_List()->getLists();
 
-		if ( $lists ) {
-			set_transient( 'gf_ctct_lists_' . $this->login, $lists, HOUR_IN_SECONDS );
-		}
+		// if ( $lists ) {
+		// 	set_transient( 'gf_ctct_lists_' . $this->login, $lists, HOUR_IN_SECONDS );
+		// }
 
 		return $lists;
 	}
