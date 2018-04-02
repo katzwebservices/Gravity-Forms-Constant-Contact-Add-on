@@ -2,7 +2,7 @@
 Tags: gravity forms, gravity, forms, constant contact, constantcontact, newsletter, mailing list
 Requires at least: 4.0
 Tested up to: 4.7.2
-Stable tag: trunk
+Stable tag: 3.1
 Contributors: katzwebdesign, katzwebservices
 Donate link: https://gravityview.co/?utm_source=plugin&utm_medium=readme&utm_content=donatelink&utm_campaign=gravity-forms-constant-contact
 
@@ -71,7 +71,16 @@ add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false
 
 == Changelog ==
 
+= 3.1 on April 2, 2018 =
+
+* Added link to refresh lists
+* Added support for Gravity Forms 2.3 encryption
+* Fixed fetching lists for usernames containing non-alphanumeric characters 
+* Fixed undefined index for username and password when setting up for the first time
+* Fixed PHP 7 code warning
+* Thanks to @fluiditystudio, @michaelw_dc, @codezen8, and @jeffhertzler for head-starts to bug fixes
 * Allow users who have `manage_options` permissions to access settings and form settings
+
 = 3.0 on February 19, 2017 =
 * Completely rewritten to use the Gravity Forms Feed Addon 2.0. If you are upgrading, <strong>check your feed configuration!</strong>
 * Now requires Gravity Forms 1.9.14+
