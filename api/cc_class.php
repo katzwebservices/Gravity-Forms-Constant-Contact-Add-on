@@ -269,15 +269,21 @@
 
 				if (! empty($attributes['rel']) && $attributes['rel'] == 'next') {
 					$tmp = explode($this->login, $attributes['href']);
-					$contacts['next'] = $tmp[1];
+					if( isset( $tmp[1] ) ) {
+						$contacts['next'] = $tmp[1];
+					}
 				}
 				if (! empty($attributes['rel']) && $attributes['rel'] == 'first') {
 					$tmp = explode($this->login, $attributes['href']);
-					$contacts['first'] = $tmp[1];
+					if( isset( $tmp[1] ) ) {
+						$contacts['first'] = $tmp[1];
+					}
 				}
 				if (! empty($attributes['rel']) && $attributes['rel'] == 'current') {
 					$tmp = explode($this->login, $attributes['href']);
-					$contacts['current'] = $tmp[1];
+					if( isset( $tmp[1] ) ) {
+						$contacts['current'] =  $tmp[1];
+					}
 				}
 			}
 
