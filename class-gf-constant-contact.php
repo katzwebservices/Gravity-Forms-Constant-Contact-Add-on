@@ -1167,7 +1167,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 		$settings = $this->get_plugin_settings();
 
 		/* If the API key or email address is not set, do not run a validation check. */
-		if ( rgblank( $settings['username'] ) || rgblank( $settings['password'] ) ) {
+		if ( empty( $settings['username'] ) || empty( $settings['password'] ) ) {
 
 			delete_transient( 'gravity_forms_cc_valid_api' );
 
