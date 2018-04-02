@@ -145,7 +145,9 @@
             $parsedReturn = simplexml_load_string($return);
             $call2 = '';
 
-            if(empty($parsedReturn) || !(is_object($parsedReturn) || is_array($parsedReturn))) { return false; }
+            if(empty($parsedReturn) || !(is_object($parsedReturn) || is_array($parsedReturn))) {
+	            return array();
+            }
 
             foreach ($parsedReturn->link as $item) {
                 $tmp = $item->Attributes();
