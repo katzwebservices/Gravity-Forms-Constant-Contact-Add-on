@@ -55,8 +55,8 @@ class GF_Constant_Contact extends GFFeedAddOn {
 	private static $_instance = NULL;
 
 	/* Permissions */
-	protected $_capabilities_settings_page = 'gravityforms_constantcontact';
-	protected $_capabilities_form_settings = 'gravityforms_constantcontact';
+	protected $_capabilities_settings_page = array( 'manage_options', 'gravityforms_constantcontact' );
+	protected $_capabilities_form_settings = array( 'manage_options', 'gravityforms_constantcontact' );
 	protected $_capabilities_uninstall = 'gravityforms_constantcontact_uninstall';
 
 	/* Members plugin integration */

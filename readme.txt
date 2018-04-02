@@ -71,6 +71,7 @@ add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false
 
 == Changelog ==
 
+* Allow users who have `manage_options` permissions to access settings and form settings
 = 3.0 on February 19, 2017 =
 * Completely rewritten to use the Gravity Forms Feed Addon 2.0. If you are upgrading, <strong>check your feed configuration!</strong>
 * Now requires Gravity Forms 1.9.14+
