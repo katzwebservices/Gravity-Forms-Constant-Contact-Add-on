@@ -79,7 +79,7 @@
         * @return  TRUE if address is valid and FALSE if not.
         */
         protected function isValidEmail($email){
-             return eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $email);
+	        return is_email( $email );
         }
 
         /**
@@ -145,13 +145,16 @@
             $parsedReturn = simplexml_load_string($return);
             $call2 = '';
 
-            if(empty($parsedReturn) || !(is_object($parsedReturn) || is_array($parsedReturn))) { return false; }
+            if(empty($parsedReturn) || !(is_object($parsedReturn) || is_array($parsedReturn))) {
+	            return array();
+            }
 
             foreach ($parsedReturn->link as $item) {
                 $tmp = $item->Attributes();
                 $nextUrl = '';
                 if ((string) $tmp->rel == 'next') {
                     $nextUrl = (string) $tmp->href;
+	                $nextUrl = urldecode( $nextUrl );
                     $arrTmp = explode($this->login, $nextUrl);
                     $nextUrl = $arrTmp[1];
                     $call2 = $this->apiPath.$nextUrl;
@@ -266,15 +269,21 @@
 
 				if (! empty($attributes['rel']) && $attributes['rel'] == 'next') {
 					$tmp = explode($this->login, $attributes['href']);
-					$contacts['next'] = $tmp[1];
+					if( isset( $tmp[1] ) ) {
+						$contacts['next'] = $tmp[1];
+					}
 				}
 				if (! empty($attributes['rel']) && $attributes['rel'] == 'first') {
 					$tmp = explode($this->login, $attributes['href']);
-					$contacts['first'] = $tmp[1];
+					if( isset( $tmp[1] ) ) {
+						$contacts['first'] = $tmp[1];
+					}
 				}
 				if (! empty($attributes['rel']) && $attributes['rel'] == 'current') {
 					$tmp = explode($this->login, $attributes['href']);
-					$contacts['current'] = $tmp[1];
+					if( isset( $tmp[1] ) ) {
+						$contacts['current'] =  $tmp[1];
+					}
 				}
 			}
 

@@ -2,7 +2,7 @@
 Tags: gravity forms, gravity, forms, constant contact, constantcontact, newsletter, mailing list
 Requires at least: 4.0
 Tested up to: 4.7.2
-Stable tag: trunk
+Stable tag: 3.1
 Contributors: katzwebdesign, katzwebservices
 Donate link: https://gravityview.co/?utm_source=plugin&utm_medium=readme&utm_content=donatelink&utm_campaign=gravity-forms-constant-contact
 
@@ -10,7 +10,7 @@ Add contacts to your Constant Contact mailing list when they submit a Gravity Fo
 
 == Description ==
 
-> This plugin requires a <a href="http://wordpress.constantcontact.com/index.jsp" rel="nofollow">Constant Contact</a> account, and the <a href="https://www.e-junkie.com/ecom/gb.php?cl=54585&c=ib&aff=84089">Gravity Forms</a> form plugin.
+> This plugin requires a <a href="https://www.constantcontact.com/?pn=katzwebservices" rel="nofollow">Constant Contact</a> account, and the <a href="https://rocketgenius.pxf.io/c/1210629/445235/7938">Gravity Forms</a> form plugin.
 
 ###Integrate Constant Contact with Gravity Forms
 If you use <strong>Constant Contact</strong> email service and the Gravity Forms plugin, you're going to want this plugin!
@@ -33,10 +33,10 @@ Integrate your Gravity Forms forms so that when users submit a form entry, the e
 == Frequently Asked Questions ==
 
 = Does this plugin require Gravity Forms? =
-Yes, it does. <a href="https://www.e-junkie.com/ecom/gb.php?cl=54585&c=ib&aff=84089">You can purchase Gravity Forms here</a>.
+Yes, it does. <a href="https://rocketgenius.pxf.io/c/1210629/445235/7938">You can purchase Gravity Forms here</a>.
 
 = Does this plugin require Constant Contact? =
-Yes, it does. If you don't have an Constant Contact account, <a href="http://wordpress.constantcontact.com/index.jsp" rel="nofollow">sign up for an account here</a>.
+Yes, it does. If you don't have an Constant Contact account, <a href="https://www.constantcontact.com/?pn=katzwebservices" rel="nofollow">sign up for an account here</a>.
 
 = What's the license for this plugin? =
 This plugin is released under a GPL license.
@@ -70,6 +70,16 @@ add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false
 4. Configure one or more feeds (Constant Contact sync rules) per form
 
 == Changelog ==
+
+= 3.1 on April 2, 2018 =
+
+* Added link to refresh lists
+* Added support for Gravity Forms 2.3 encryption
+* Fixed fetching lists for usernames containing non-alphanumeric characters 
+* Fixed undefined index for username and password when setting up for the first time
+* Fixed PHP 7 code warning
+* Thanks to @fluiditystudio, @michaelw_dc, @codezen8, and @jeffhertzler for head-starts to bug fixes
+* Allow users who have `manage_options` permissions to access settings and form settings
 
 = 3.0 on February 19, 2017 =
 * Completely rewritten to use the Gravity Forms Feed Addon 2.0. If you are upgrading, <strong>check your feed configuration!</strong>

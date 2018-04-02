@@ -55,8 +55,8 @@ class GF_Constant_Contact extends GFFeedAddOn {
 	private static $_instance = NULL;
 
 	/* Permissions */
-	protected $_capabilities_settings_page = 'gravityforms_constantcontact';
-	protected $_capabilities_form_settings = 'gravityforms_constantcontact';
+	protected $_capabilities_settings_page = array( 'manage_options', 'gravityforms_constantcontact' );
+	protected $_capabilities_form_settings = array( 'manage_options', 'gravityforms_constantcontact' );
 	protected $_capabilities_uninstall = 'gravityforms_constantcontact_uninstall';
 
 	/* Members plugin integration */
@@ -149,11 +149,9 @@ class GF_Constant_Contact extends GFFeedAddOn {
         //
 		$settings = get_option( 'gf_constantcontact_settings' );
 
-		if ( ! empty( $settings ) && empty( $settings['encrypted'] ) && method_exists( 'GFCommon', 'encrypt') ) {
+		if ( ! empty( $settings ) && empty( $settings['encrypted'] ) ) {
 
-		    $settings = array_map( array( 'GFCommon', 'encrypt' ), $settings );
-
-			update_option( 'gf_constantcontact_settings', $settings );
+		    $settings = $this->update_plugin_settings( $settings );
 		}
 
         //
@@ -357,7 +355,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 					),
 					array(
 						'name'     => 'lists[]',
-						'label'    => __( 'Constant Contact Lists', 'gravity-forms-constant-contact' ),
+						'label'    => esc_html__( 'Constant Contact Lists', 'gravity-forms-constant-contact' ) .' (<a href="'. esc_url( add_query_arg( array( 'cache' => 0 ) ) ) . '">'. esc_html__('Refresh Lists', 'gravity-forms-constant-contact' ) . '</a>)',
 						'type'     => 'select',
 						'class'    => 'chosen',
 						'after_select' => "<script>
@@ -1038,12 +1036,10 @@ class GF_Constant_Contact extends GFFeedAddOn {
 
 		    $settings = get_option( 'gf_constantcontact_settings' );
 
-		    if ( ! empty( $settings['encrypted'] ) ) {
-			    $settings = array_map( array( 'GFCommon', 'decrypt' ), $settings );
-		    }
+		    $settings = $this->decrypt( $settings );
 	    }
 
-		$settings = array_map( 'trim', $settings );
+		$settings = array_map( 'trim', (array) $settings );
 
 		return $settings;
 	}
@@ -1052,14 +1048,84 @@ class GF_Constant_Contact extends GFFeedAddOn {
 	 * Updates plugin settings with the provided settings
 	 *
 	 * @param array $settings - Plugin settings to be saved
+     *
+     * @return array $settings
 	 */
 	public function update_plugin_settings( $settings ) {
 
+		$settings = $this->encrypt( $settings );
+
+		update_option( 'gf_constantcontact_settings', $settings, false );
+
+		return $settings;
+	}
+
+	/**
+     * Encrypt settings with support for GFCommon::encrypt as well as GFCommon::openssl_encrypt
+     *
+     * @since 3.1
+     *
+	 * @param $settings
+	 *
+	 * @return array
+	 */
+	private function encrypt( $settings ) {
+
+	    if(  ! method_exists( 'GFCommon', 'encrypt') && ! method_exists( 'GFCommon', 'openssl_encrypt') ) {
+	        return $settings;
+        }
+
+
+	    if( method_exists( 'GFCommon', 'openssl_encrypt') ) {
+		    $settings = array_map( array( 'GFCommon', 'openssl_encrypt' ), $settings );
+		    $settings['encryption-method'] = 'openssl_encrypt';
+	    } else {
+		    $settings = array_map( array( 'GFCommon', 'encrypt' ), $settings );
+		    $settings['encryption-method'] = 'encrypt';
+        }
+
+        $settings['encrypted'] = 1;
+
+	    return $settings;
+    }
+
+	/**
+	 * Decrypt settings with support for GFCommon::decrypt as well as GFCommon::openssl_decrypt
+	 *
+	 * @since 3.1
+	 *
+	 * @param $settings
+	 *
+	 * @return array
+	 */
+	private function decrypt( $settings ) {
+
+		if(  ! method_exists( 'GFCommon', 'encrypt') && ! method_exists( 'GFCommon', 'openssl_encrypt') ) {
+			return $settings;
+		}
+
+		// Not encrypted, so don't decrypt!
+		if ( ! isset( $settings['encrypted'] ) ) {
+            return $settings;
+		}
+
+		$encryption_method = isset( $settings['encryption-method'] ) ? $settings['encryption-method'] : 'encrypt';
+
+		switch ( $encryption_method ) {
+            case 'openssl_encrypt':
+                $settings = array_map( array( 'GFCommon', 'openssl_decrypt' ), $settings );
+	            break;
+
+            case 'encrypt':
+            default:
+                $settings = array_map( array( 'GFCommon', 'decrypt' ), $settings );
+                break;
+		}
+
+		$settings['encryption-method'] = $encryption_method;
 		$settings['encrypted'] = 1;
 
-		$settings = array_map( array( 'GFCommon', 'encrypt' ), $settings );
-
-		update_option( 'gf_constantcontact_settings', $settings );
+        return $settings;
 	}
 
 	/**
@@ -1108,7 +1174,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 		$settings = $this->get_plugin_settings();
 
 		/* If the API key or email address is not set, do not run a validation check. */
-		if ( rgblank( $settings['username'] ) || rgblank( $settings['password'] ) ) {
+		if ( empty( $settings['username'] ) || empty( $settings['password'] ) ) {
 
 			delete_transient( 'gravity_forms_cc_valid_api' );
 
