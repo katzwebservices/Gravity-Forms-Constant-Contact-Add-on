@@ -152,6 +152,7 @@
                 $nextUrl = '';
                 if ((string) $tmp->rel == 'next') {
                     $nextUrl = (string) $tmp->href;
+	                $nextUrl = urldecode( $nextUrl );
                     $arrTmp = explode($this->login, $nextUrl);
                     $nextUrl = $arrTmp[1];
                     $call2 = $this->apiPath.$nextUrl;
