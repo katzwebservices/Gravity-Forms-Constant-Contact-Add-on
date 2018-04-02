@@ -1043,7 +1043,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 		    }
 	    }
 
-		$settings = array_map( 'trim', $settings );
+		$settings = array_map( 'trim', (array) $settings );
 
 		return $settings;
 	}
