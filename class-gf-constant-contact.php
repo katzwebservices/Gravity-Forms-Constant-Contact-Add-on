@@ -149,11 +149,11 @@ class GF_Constant_Contact extends GFFeedAddOn {
         //
 		$settings = get_option( 'gf_constantcontact_settings' );
 
-		if ( ! empty( $settings ) && empty( $settings['encrypted'] ) && method_exists( 'GFCommon', 'encrypt') ) {
+		if ( ! empty( $settings ) && empty( $settings['encrypted'] ) ) {
 
-		    $settings = array_map( array( 'GFCommon', 'encrypt' ), $settings );
+		    $settings = $this->encrypt( $settings );
 
-			update_option( 'gf_constantcontact_settings', $settings );
+			update_option( 'gf_constantcontact_settings', $settings, false );
 		}
 
         //
@@ -1038,9 +1038,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 
 		    $settings = get_option( 'gf_constantcontact_settings' );
 
-		    if ( ! empty( $settings['encrypted'] ) ) {
-			    $settings = array_map( array( 'GFCommon', 'decrypt' ), $settings );
-		    }
+		    $settings = $this->decrypt( $settings );
 	    }
 
 		$settings = array_map( 'trim', (array) $settings );
@@ -1055,11 +1053,72 @@ class GF_Constant_Contact extends GFFeedAddOn {
 	 */
 	public function update_plugin_settings( $settings ) {
 
+		$settings = $this->encrypt( $settings );
+
+		update_option( 'gf_constantcontact_settings', $settings, false );
+	}
+
+	/**
+     * Encrypt settings with support for GFCommon::encrypt as well as GFCommon::openssl_encrypt
+     *
+     * @since 3.1
+     *
+	 * @param $settings
+	 *
+	 * @return array
+	 */
+	private function encrypt( $settings ) {
+
+	    if(  ! method_exists( 'GFCommon', 'encrypt') && ! method_exists( 'GFCommon', 'openssl_encrypt') ) {
+	        return $settings;
+        }
+
 		$settings['encrypted'] = 1;
 
-		$settings = array_map( array( 'GFCommon', 'encrypt' ), $settings );
+	    if( method_exists( 'GFCommon', 'openssl_encrypt') ) {
+		    $settings['encryption-method'] = 'openssl_encrypt';
+		    $settings = array_map( array( 'GFCommon', 'openssl_encrypt' ), $settings );
+	    } else {
+		    $settings['encryption-method'] = 'encrypt';
+		    $settings = array_map( array( 'GFCommon', 'encrypt' ), $settings );
+        }
 
-		update_option( 'gf_constantcontact_settings', $settings );
+	    return $settings;
+    }
+
+	/**
+	 * Decrypt settings with support for GFCommon::decrypt as well as GFCommon::openssl_decrypt
+	 *
+	 * @since 3.1
+	 *
+	 * @param $settings
+	 *
+	 * @return array
+	 */
+	private function decrypt( $settings ) {
+
+		if(  ! method_exists( 'GFCommon', 'encrypt') && ! method_exists( 'GFCommon', 'openssl_encrypt') ) {
+			return $settings;
+		}
+
+		// Not encrypted, so don't decrypt!
+		if ( ! isset( $settings['encrypted'] ) ) {
+            return $settings;
+		}
+
+		if( method_exists( 'GFCommon', 'openssl_encrypt') ) {
+
+		    $settings = array_map( array( 'GFCommon', 'openssl_decrypt' ), $settings );
+
+			// The decryption has worked; 'openssl_decrypt' is a valid response
+			if ( isset( $settings['encryption-method'] ) && 'openssl_decrypt' === $settings['encryption-method'] ) {
+				return $settings;
+			}
+		}
+
+		$settings = array_map( array( 'GFCommon', 'decrypt' ), $settings );
+
+        return $settings;
 	}
 
 	/**
