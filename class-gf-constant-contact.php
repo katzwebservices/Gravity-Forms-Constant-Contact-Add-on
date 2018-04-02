@@ -355,7 +355,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 					),
 					array(
 						'name'     => 'lists[]',
-						'label'    => __( 'Constant Contact Lists', 'gravity-forms-constant-contact' ),
+						'label'    => esc_html__( 'Constant Contact Lists', 'gravity-forms-constant-contact' ) .' (<a href="'. esc_url( add_query_arg( array( 'cache' => 0 ) ) ) . '">'. esc_html__('Refresh Lists', 'gravity-forms-constant-contact' ) . '</a>)',
 						'type'     => 'select',
 						'class'    => 'chosen',
 						'after_select' => "<script>
