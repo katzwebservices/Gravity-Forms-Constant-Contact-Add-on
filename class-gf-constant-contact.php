@@ -1073,15 +1073,16 @@ class GF_Constant_Contact extends GFFeedAddOn {
 	        return $settings;
         }
 
-		$settings['encrypted'] = 1;
 
 	    if( method_exists( 'GFCommon', 'openssl_encrypt') ) {
-		    $settings['encryption-method'] = 'openssl_encrypt';
 		    $settings = array_map( array( 'GFCommon', 'openssl_encrypt' ), $settings );
+		    $settings['encryption-method'] = 'openssl_encrypt';
 	    } else {
-		    $settings['encryption-method'] = 'encrypt';
 		    $settings = array_map( array( 'GFCommon', 'encrypt' ), $settings );
+		    $settings['encryption-method'] = 'encrypt';
         }
+
+        $settings['encrypted'] = 1;
 
 	    return $settings;
     }
@@ -1106,17 +1107,21 @@ class GF_Constant_Contact extends GFFeedAddOn {
             return $settings;
 		}
 
-		if( method_exists( 'GFCommon', 'openssl_encrypt') ) {
+		$encryption_method = isset( $settings['encryption-method'] ) ? $settings['encryption-method'] : 'encrypt';
 
-		    $settings = array_map( array( 'GFCommon', 'openssl_decrypt' ), $settings );
+		switch ( $encryption_method ) {
+            case 'openssl_encrypt':
+                $settings = array_map( array( 'GFCommon', 'openssl_decrypt' ), $settings );
+	            break;
 
-			// The decryption has worked; 'openssl_decrypt' is a valid response
-			if ( isset( $settings['encryption-method'] ) && 'openssl_decrypt' === $settings['encryption-method'] ) {
-				return $settings;
-			}
+            case 'encrypt':
+            default:
+                $settings = array_map( array( 'GFCommon', 'decrypt' ), $settings );
+                break;
 		}
 
-		$settings = array_map( array( 'GFCommon', 'decrypt' ), $settings );
+		$settings['encryption-method'] = $encryption_method;
+		$settings['encrypted'] = 1;
 
         return $settings;
 	}
