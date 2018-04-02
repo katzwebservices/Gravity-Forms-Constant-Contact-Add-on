@@ -151,9 +151,7 @@ class GF_Constant_Contact extends GFFeedAddOn {
 
 		if ( ! empty( $settings ) && empty( $settings['encrypted'] ) ) {
 
-		    $settings = $this->encrypt( $settings );
-
-			update_option( 'gf_constantcontact_settings', $settings, false );
+		    $settings = $this->update_plugin_settings( $settings );
 		}
 
         //
@@ -1050,12 +1048,16 @@ class GF_Constant_Contact extends GFFeedAddOn {
 	 * Updates plugin settings with the provided settings
 	 *
 	 * @param array $settings - Plugin settings to be saved
+     *
+     * @return array $settings
 	 */
 	public function update_plugin_settings( $settings ) {
 
 		$settings = $this->encrypt( $settings );
 
 		update_option( 'gf_constantcontact_settings', $settings, false );
+
+		return $settings;
 	}
 
 	/**
