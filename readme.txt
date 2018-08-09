@@ -1,8 +1,8 @@
 === Gravity Forms Constant Contact ===
 Tags: gravity forms, gravity, forms, constant contact, constantcontact, newsletter, mailing list
 Requires at least: 4.0
-Tested up to: 4.7.2
-Stable tag: 3.1
+Tested up to: 4.9.8
+Stable tag: 3.1.1
 Contributors: katzwebdesign, katzwebservices
 Donate link: https://gravityview.co/?utm_source=plugin&utm_medium=readme&utm_content=donatelink&utm_campaign=gravity-forms-constant-contact
 
@@ -70,6 +70,10 @@ add_filter('gravityforms_constant_contact_add_notes_to_entries', '__return_false
 4. Configure one or more feeds (Constant Contact sync rules) per form
 
 == Changelog ==
+
+= 3.1.1 on August 9, 2018 =
+
+* Fixed `hash_equals()` PHP warning (thanks, @connorblikre!)
 
 = 3.1 on April 2, 2018 =
 

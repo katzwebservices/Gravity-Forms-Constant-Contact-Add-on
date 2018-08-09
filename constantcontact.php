@@ -3,14 +3,14 @@
 Plugin Name: Gravity Forms Constant Contact Add-On
 Plugin URI: https://katz.co/plugins/gravity-forms-constant-contact/
 Description: Integrates Gravity Forms with Constant Contact allowing form submissions to be automatically sent to your Constant Contact account.
-Version: 3.1
+Version: 3.1.1
 Text Domain: gravity-forms-constant-contact
 Author: Katz Web Services, Inc.
 Author URI: https://katz.co
 Domain Path: /languages
 
 ------------------------------------------------------------------------
-Copyright 2017 Katz Web Services, Inc.
+Copyright 2018 Katz Web Services, Inc.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 
-define( 'GF_CONSTANT_CONTACT_VERSION', '3.1' );
+define( 'GF_CONSTANT_CONTACT_VERSION', '3.1.1' );
 
 add_action( 'gform_loaded', array( 'GF_Constant_Contact_Bootstrap', 'load' ), 5 );
 
