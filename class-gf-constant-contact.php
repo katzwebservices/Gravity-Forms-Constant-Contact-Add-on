@@ -1111,6 +1111,12 @@ class GF_Constant_Contact extends GFFeedAddOn {
 
 		$encryption_method = isset( $settings['encryption-method'] ) ? $settings['encryption-method'] : 'encrypt';
 
+		/**
+         * No need to decrypt, so unset for now and set again below
+         * @see https://wordpress.org/support/topic/errors-on-all-constant-contact-settings-pages/
+         */
+		unset( $settings['encrypted'], $settings['encryption-method'] );
+
 		switch ( $encryption_method ) {
             case 'openssl_encrypt':
                 $settings = array_map( array( 'GFCommon', 'openssl_decrypt' ), $settings );
